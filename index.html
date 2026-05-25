@@ -1,0 +1,1934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Craft Mocktail Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --obsidian: #0d0e0f;
+    --deep: #111315;
+    --surface: #181a1c;
+    --card: #1e2124;
+    --card-hover: #242729;
+    --border: #2a2d31;
+    --border-light: #353a3f;
+    --amber: #c8872a;
+    --amber-light: #e8a244;
+    --amber-glow: #f0b55a;
+    --gold: #d4a843;
+    --sage: #7a9e82;
+    --rose: #c26b6b;
+    --teal: #4a9d9d;
+    --lavender: #8b7fba;
+    --text: #e8e4dc;
+    --text-dim: #a09890;
+    --text-muted: #60605a;
+    --success: #5a9e6a;
+    --warning: #c26b3a;
+    --grain-opacity: 0.03;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--obsidian);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    opacity: var(--grain-opacity);
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* ── HEADER ── */
+  .app-header {
+    text-align: center;
+    padding: 3rem 1.5rem 2rem;
+    position: relative;
+  }
+
+  .app-header::after {
+    content: '';
+    display: block;
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--amber), transparent);
+    margin: 1.5rem auto 0;
+  }
+
+  .header-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    opacity: 0.8;
+  }
+
+  .header-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.4rem, 7vw, 4rem);
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    color: var(--text);
+  }
+
+  .header-title em {
+    font-style: italic;
+    color: var(--amber-light);
+  }
+
+  .header-sub {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 0.6rem;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── NAV TABS ── */
+  .nav-tabs {
+    display: flex;
+    gap: 0;
+    padding: 0 1rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: rgba(13,14,15,0.95);
+    backdrop-filter: blur(20px);
+    z-index: 100;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .nav-tabs::-webkit-scrollbar { display: none; }
+
+  .nav-tab {
+    flex-shrink: 0;
+    padding: 1rem 1.2rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    cursor: pointer;
+    border: none;
+    background: none;
+    border-bottom: 2px solid transparent;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+    position: relative;
+    top: 1px;
+  }
+
+  .nav-tab:hover { color: var(--text-dim); }
+
+  .nav-tab.active {
+    color: var(--amber-light);
+    border-bottom-color: var(--amber);
+  }
+
+  /* ── SECTIONS ── */
+  .section {
+    display: none;
+    padding: 2rem 1rem 4rem;
+    max-width: 860px;
+    margin: 0 auto;
+    animation: fadeUp 0.35s ease;
+  }
+
+  .section.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+    font-weight: 400;
+    margin-bottom: 0.3rem;
+    color: var(--text);
+  }
+
+  .section-title span { color: var(--amber-light); font-style: italic; }
+
+  .section-desc {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    transition: border-color 0.2s;
+  }
+
+  .card:hover { border-color: var(--border-light); }
+
+  .card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 0.75rem;
+    opacity: 0.7;
+  }
+
+  /* ── SECTION 1: INVENTORY ── */
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .category-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    transition: border-color 0.2s;
+  }
+
+  .category-icon {
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .category-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--text-dim);
+  }
+
+  .ingredient-list { display: flex; flex-direction: column; gap: 0.4rem; }
+
+  .ingredient-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.35rem 0.5rem;
+    border-radius: 6px;
+    transition: background 0.15s;
+    user-select: none;
+  }
+
+  .ingredient-item:hover { background: rgba(200,135,42,0.06); }
+
+  .ingredient-item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--border-light);
+    border-radius: 4px;
+    flex-shrink: 0;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.15s;
+    background: transparent;
+  }
+
+  .ingredient-item input[type="checkbox"]:checked {
+    background: var(--amber);
+    border-color: var(--amber);
+  }
+
+  .ingredient-item input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 10px;
+    color: var(--obsidian);
+    font-weight: bold;
+  }
+
+  .ingredient-label {
+    font-size: 0.83rem;
+    color: var(--text-dim);
+    transition: color 0.15s;
+  }
+
+  .ingredient-item.checked .ingredient-label { color: var(--text); }
+
+  /* Flavor Profile Output */
+  .flavor-panel {
+    background: linear-gradient(135deg, rgba(200,135,42,0.07), rgba(200,135,42,0.02));
+    border: 1px solid rgba(200,135,42,0.25);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    min-height: 100px;
+    transition: all 0.3s ease;
+  }
+
+  .flavor-panel-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 0.75rem;
+    opacity: 0.7;
+  }
+
+  .flavor-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .flavor-tag {
+    padding: 0.2rem 0.65rem;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.05em;
+    border: 1px solid;
+    animation: tagIn 0.2s ease;
+  }
+
+  @keyframes tagIn {
+    from { opacity: 0; transform: scale(0.85); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  .tag-citrus   { color: #e8c44a; border-color: rgba(232,196,74,0.35); background: rgba(232,196,74,0.06); }
+  .tag-sweet    { color: #c26b6b; border-color: rgba(194,107,107,0.35); background: rgba(194,107,107,0.06); }
+  .tag-herbal   { color: #7a9e82; border-color: rgba(122,158,130,0.35); background: rgba(122,158,130,0.06); }
+  .tag-fizzy    { color: #4a9d9d; border-color: rgba(74,157,157,0.35); background: rgba(74,157,157,0.06); }
+  .tag-spicy    { color: #c26b3a; border-color: rgba(194,107,58,0.35); background: rgba(194,107,58,0.06); }
+  .tag-floral   { color: #8b7fba; border-color: rgba(139,127,186,0.35); background: rgba(139,127,186,0.06); }
+  .tag-bitter   { color: #6b8fb0; border-color: rgba(107,143,176,0.35); background: rgba(107,143,176,0.06); }
+
+  .ratio-box {
+    background: var(--deep);
+    border-radius: 8px;
+    padding: 0.9rem 1.1rem;
+    border-left: 3px solid var(--amber);
+    margin-top: 0.5rem;
+  }
+
+  .ratio-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--amber-light);
+    margin-bottom: 0.25rem;
+  }
+
+  .ratio-formula {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+  }
+
+  .flavor-empty {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    font-style: italic;
+    padding: 1.5rem 0;
+  }
+
+  /* ── SECTION 2: MOOD MATCHER ── */
+  .mood-input-wrap { position: relative; margin-bottom: 1rem; }
+
+  .mood-input {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 300;
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s;
+    line-height: 1.6;
+    min-height: 80px;
+  }
+
+  .mood-input::placeholder { color: var(--text-muted); }
+  .mood-input:focus { border-color: var(--amber); }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--amber);
+    color: var(--obsidian);
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 400;
+  }
+
+  .btn-primary:hover {
+    background: var(--amber-glow);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(200,135,42,0.3);
+  }
+
+  .btn-primary:active { transform: translateY(0); }
+
+  .mood-result {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    display: none;
+    animation: fadeUp 0.3s ease;
+  }
+
+  .mood-result.visible { display: block; }
+
+  .result-header {
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(135deg, rgba(200,135,42,0.12), transparent);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .drink-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    font-weight: 400;
+    color: var(--amber-light);
+    margin-bottom: 0.2rem;
+  }
+
+  .drink-archetype {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .result-body { padding: 1.25rem 1.5rem; }
+
+  .result-section { margin-bottom: 1.25rem; }
+
+  .result-section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    opacity: 0.7;
+    margin-bottom: 0.5rem;
+  }
+
+  .build-steps { display: flex; flex-direction: column; gap: 0.4rem; }
+
+  .build-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .step-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--amber);
+    background: rgba(200,135,42,0.1);
+    border-radius: 4px;
+    padding: 0.1rem 0.35rem;
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+  }
+
+  .flavor-notes {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.65;
+    font-style: italic;
+  }
+
+  /* Missing Ingredients */
+  .missing-box {
+    background: rgba(194,107,58,0.08);
+    border: 1px solid rgba(194,107,58,0.3);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-top: 0.5rem;
+  }
+
+  .missing-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--warning);
+    margin-bottom: 0.5rem;
+  }
+
+  .missing-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    padding: 0.2rem 0;
+  }
+
+  .missing-item::before {
+    content: '→';
+    color: var(--warning);
+    font-size: 0.75rem;
+  }
+
+  /* ── SECTION 3: BATCH CALC ── */
+  .calc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 480px) { .calc-grid { grid-template-columns: 1fr; } }
+
+  .slider-group { display: flex; flex-direction: column; gap: 0.4rem; }
+
+  .slider-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .slider-name {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+
+  .slider-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--amber-light);
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--amber);
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(200,135,42,0.4);
+    transition: transform 0.15s;
+  }
+
+  input[type="range"]::-webkit-slider-thumb:active { transform: scale(1.2); }
+  input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--amber);
+    cursor: pointer;
+    border: none;
+  }
+
+  .guest-slider-wrap {
+    grid-column: 1 / -1;
+  }
+
+  .batch-results {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .batch-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.9rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+
+  .batch-row:last-child { border-bottom: none; }
+  .batch-row:hover { background: var(--card-hover); }
+
+  .batch-row.highlight {
+    background: rgba(200,135,42,0.05);
+    border-left: 3px solid var(--amber);
+  }
+
+  .batch-row.dilution {
+    background: rgba(74,157,157,0.05);
+    border-left: 3px solid var(--teal);
+  }
+
+  .batch-row.total {
+    background: rgba(200,135,42,0.1);
+    border-bottom: none;
+  }
+
+  .row-label { font-size: 0.82rem; color: var(--text-dim); }
+  .row-label strong { color: var(--text); }
+
+  .row-values {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .val-oz {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--text);
+    text-align: right;
+    min-width: 60px;
+  }
+
+  .val-cups {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-align: right;
+    min-width: 50px;
+  }
+
+  .units-header {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 0.5rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .unit-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    min-width: 60px;
+    text-align: right;
+  }
+
+  .unit-label:last-child { min-width: 50px; }
+
+  .dilution-note {
+    font-size: 0.75rem;
+    color: var(--teal);
+    margin-top: 0.75rem;
+    line-height: 1.5;
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  /* ── SECTION 4: LAYERING ── */
+  .layer-builder {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  @media (max-width: 600px) {
+    .layer-builder { grid-template-columns: 1fr; }
+    .glass-visual { order: -1; margin: 0 auto; }
+  }
+
+  .layer-controls { display: flex; flex-direction: column; gap: 0.75rem; }
+
+  .layer-slot {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+    transition: border-color 0.2s;
+  }
+
+  .layer-slot-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .layer-select {
+    width: 100%;
+    background: var(--deep);
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem;
+    padding: 0.5rem 0.75rem;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23a09890'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 8px;
+    padding-right: 2rem;
+  }
+
+  .layer-select:focus { border-color: var(--amber); }
+  .layer-select option { background: var(--card); }
+
+  .density-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    margin-top: 0.35rem;
+  }
+
+  /* Glass Visual */
+  .glass-visual {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .glass-wrap {
+    position: relative;
+    width: 120px;
+    height: 220px;
+  }
+
+  .glass-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+  .liquid-layers {
+    position: absolute;
+    bottom: 14px;
+    left: 10px;
+    right: 10px;
+    height: 185px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    border-radius: 0 0 8px 8px;
+  }
+
+  .liquid-layer {
+    flex: 1;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .liquid-layer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(255,255,255,0.15);
+  }
+
+  .layer-name-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.55rem;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.7);
+    text-transform: uppercase;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+
+  .status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.08em;
+    text-align: center;
+    line-height: 1.4;
+    width: 100%;
+  }
+
+  .status-badge.good {
+    background: rgba(90,158,106,0.12);
+    border: 1px solid rgba(90,158,106,0.35);
+    color: var(--success);
+  }
+
+  .status-badge.warn {
+    background: rgba(194,107,58,0.12);
+    border: 1px solid rgba(194,107,58,0.35);
+    color: var(--warning);
+  }
+
+  .bleed-animation {
+    animation: bleed 2s ease-in-out infinite;
+  }
+
+  @keyframes bleed {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  /* ── DIVIDER ── */
+  .ornament {
+    text-align: center;
+    color: var(--amber);
+    opacity: 0.25;
+    font-size: 0.8rem;
+    margin: 0.5rem 0;
+    letter-spacing: 0.3em;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    .section { padding: 1.5rem 0.75rem 3rem; }
+    .category-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--deep); }
+  ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+
+  /* Loading shimmer */
+  .shimmer {
+    background: linear-gradient(90deg, var(--card) 25%, var(--card-hover) 50%, var(--card) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* Tip chip */
+  .tip-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: rgba(200,135,42,0.08);
+    border: 1px solid rgba(200,135,42,0.18);
+    border-radius: 100px;
+    padding: 0.25rem 0.65rem;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  .tip-chip span { color: var(--amber); }
+
+  /* ── CUSTOM INGREDIENT CREATOR ── */
+  .custom-creator {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    transition: border-color 0.2s;
+  }
+
+  .custom-creator-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    opacity: 0.7;
+    margin-bottom: 0.75rem;
+  }
+
+  .custom-creator-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .custom-text-input {
+    flex: 1 1 160px;
+    background: var(--deep);
+    border: 1px solid var(--border-light);
+    border-radius: 7px;
+    padding: 0.55rem 0.85rem;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem;
+    outline: none;
+    transition: border-color 0.2s;
+    min-width: 0;
+  }
+
+  .custom-text-input::placeholder { color: var(--text-muted); }
+  .custom-text-input:focus { border-color: var(--amber); }
+
+  .custom-cat-select {
+    flex: 0 1 140px;
+    background: var(--deep);
+    border: 1px solid var(--border-light);
+    border-radius: 7px;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem;
+    padding: 0.55rem 2rem 0.55rem 0.75rem;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23a09890'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.65rem center;
+    background-size: 7px;
+    transition: border-color 0.2s;
+    min-width: 0;
+  }
+
+  .custom-cat-select:focus { border-color: var(--amber); }
+  .custom-cat-select option { background: var(--card); }
+
+  .btn-add-ingredient {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: var(--amber);
+    color: var(--obsidian);
+    border: none;
+    border-radius: 7px;
+    padding: 0.55rem 1.1rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-weight: 400;
+    transition: all 0.18s;
+    white-space: nowrap;
+  }
+
+  .btn-add-ingredient:hover {
+    background: var(--amber-glow);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(200,135,42,0.3);
+  }
+
+  .btn-add-ingredient:active { transform: translateY(0); }
+
+  /* Flash feedback */
+  @keyframes creatorFlash {
+    0%   { box-shadow: 0 0 0 0 rgba(200,135,42,0.45); }
+    60%  { box-shadow: 0 0 0 7px rgba(200,135,42,0); }
+    100% { box-shadow: none; }
+  }
+
+  .custom-creator.flash { animation: creatorFlash 0.5s ease; }
+
+  /* Custom ingredient row */
+  .ingredient-item.custom-ingredient { justify-content: space-between; }
+
+  .ingredient-item.custom-ingredient .ingredient-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+    cursor: pointer;
+  }
+
+  .btn-delete-ingredient {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.2rem 0.3rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    line-height: 1;
+    transition: all 0.15s;
+    opacity: 0;
+    margin-left: 0.25rem;
+  }
+
+  .ingredient-item.custom-ingredient:hover .btn-delete-ingredient { opacity: 1; }
+
+  .btn-delete-ingredient:hover {
+    color: var(--warning);
+    background: rgba(194,107,58,0.12);
+  }
+
+  /* "Custom" micro-badge */
+  .custom-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.52rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--amber);
+    background: rgba(200,135,42,0.1);
+    border: 1px solid rgba(200,135,42,0.2);
+    border-radius: 3px;
+    padding: 0.05rem 0.3rem;
+    flex-shrink: 0;
+  }
+
+  /* Slide-in for new rows */
+  @keyframes ingredientSlideIn {
+    from { opacity: 0; transform: translateX(-8px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  .ingredient-item.slide-in { animation: ingredientSlideIn 0.25s ease; }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-eyebrow">✦ The Art of Alcohol-Free Craft ✦</div>
+  <h1 class="header-title">Craft <em>Mocktail</em> Studio</h1>
+  <p class="header-sub">Your personal zero-proof bar toolkit</p>
+</header>
+
+<nav class="nav-tabs" role="tablist">
+  <button class="nav-tab active" onclick="switchTab(0)" role="tab">01 / Inventory</button>
+  <button class="nav-tab" onclick="switchTab(1)" role="tab">02 / Mood Match</button>
+  <button class="nav-tab" onclick="switchTab(2)" role="tab">03 / Batch Calc</button>
+  <button class="nav-tab" onclick="switchTab(3)" role="tab">04 / Layering</button>
+</nav>
+
+<!-- ════════════════════════════════════════
+     SECTION 1 · INVENTORY & FLAVOR MATCHER
+     ════════════════════════════════════════ -->
+<section class="section active" id="sec-0">
+  <h2 class="section-title">Dynamic <span>Inventory</span></h2>
+  <p class="section-desc">Check what you have on hand. The flavor engine updates in real time.</p>
+
+  <!-- Custom Ingredient Creator -->
+  <div class="custom-creator" id="custom-creator">
+    <div class="custom-creator-label">&#10022; Custom Ingredient Creator</div>
+    <div class="custom-creator-row">
+      <input
+        type="text"
+        class="custom-text-input"
+        id="custom-ingredient-input"
+        placeholder="Add custom ingredient&hellip;"
+        maxlength="40"
+        autocomplete="off"
+        onkeydown="if(event.key==='Enter') addCustomIngredient()"
+      >
+      <select class="custom-cat-select" id="custom-cat-select">
+        <option value="Citrus">Citrus</option>
+        <option value="Sweeteners">Sweeteners</option>
+        <option value="Herbs">Herbs</option>
+        <option value="Mixers">Mixers</option>
+        <option value="Juices">Juices</option>
+        <option value="Bitters &amp; Spice">Bitters &amp; Spice</option>
+      </select>
+      <button class="btn-add-ingredient" onclick="addCustomIngredient()">+ Add</button>
+    </div>
+  </div>
+
+  <div class="category-grid" id="ingredient-grid"></div>
+
+  <div class="flavor-panel" id="flavor-panel">
+    <div class="flavor-panel-title">✦ Live Flavor Profile</div>
+    <div id="flavor-output">
+      <div class="flavor-empty">Select ingredients above to reveal your flavor profile →</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     SECTION 2 · MOOD MATCHING MIXOLOGIST
+     ════════════════════════════════════════ -->
+<section class="section" id="sec-1">
+  <h2 class="section-title">Mood <span>Mixologist</span></h2>
+  <p class="section-desc">Describe your vibe. The studio will craft a recipe from your inventory — or tell you exactly what to grab.</p>
+
+  <div class="tip-chip"><span>✦</span> Uses your checked ingredients from Section 01</div>
+
+  <div class="mood-input-wrap">
+    <textarea class="mood-input" id="mood-text" rows="3"
+      placeholder="e.g. 'I want something refreshing and spicy for a hot day'&#10;or 'Something bitter, complex, and cozy for a rainy evening'"></textarea>
+  </div>
+
+  <button class="btn-primary" onclick="matchMood()">
+    ✦ Craft My Drink
+  </button>
+
+  <div style="margin-top:1.25rem;" id="mood-result-wrap">
+    <div class="mood-result" id="mood-result"></div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     SECTION 3 · BATCH & DILUTION CALCULATOR
+     ════════════════════════════════════════ -->
+<section class="section" id="sec-2">
+  <h2 class="section-title">Batch & <span>Dilution</span></h2>
+  <p class="section-desc">Scale any recipe for a crowd. Dilution is auto-calculated at 20% of pre-mixer volume to match a professionally shaken drink.</p>
+
+  <div class="card" style="margin-bottom:1.5rem;">
+    <div class="card-label">✦ Recipe Components (oz per serving)</div>
+    <div class="calc-grid">
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-name">Base / Spirit</span>
+          <span class="slider-value" id="val-base">2.0 oz</span>
+        </div>
+        <input type="range" id="sl-base" min="0.5" max="4" step="0.25" value="2"
+          oninput="updateBatch()">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-name">Sweetener</span>
+          <span class="slider-value" id="val-sweet">0.75 oz</span>
+        </div>
+        <input type="range" id="sl-sweet" min="0" max="2" step="0.25" value="0.75"
+          oninput="updateBatch()">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-name">Sour / Acid</span>
+          <span class="slider-value" id="val-sour">0.75 oz</span>
+        </div>
+        <input type="range" id="sl-sour" min="0" max="2" step="0.25" value="0.75"
+          oninput="updateBatch()">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-name">Mixer / Top-off</span>
+          <span class="slider-value" id="val-mixer">2.0 oz</span>
+        </div>
+        <input type="range" id="sl-mixer" min="0" max="6" step="0.25" value="2"
+          oninput="updateBatch()">
+      </div>
+      <div class="slider-group guest-slider-wrap">
+        <div class="slider-label">
+          <span class="slider-name" style="color:var(--amber);">👥 Guests</span>
+          <span class="slider-value" id="val-guests" style="font-size:1rem;">12</span>
+        </div>
+        <input type="range" id="sl-guests" min="1" max="50" step="1" value="12"
+          oninput="updateBatch()">
+      </div>
+    </div>
+  </div>
+
+  <div class="batch-results">
+    <div class="units-header">
+      <div class="unit-label">Fluid oz</div>
+      <div class="unit-label">Cups</div>
+    </div>
+    <div id="batch-rows"></div>
+  </div>
+
+  <div class="dilution-note">
+    <span style="color:var(--teal);">◈</span>
+    <span>Dilution row represents ice melt from shaking. When batching in a pitcher, add this water separately before serving so your drink tastes exactly like a single hand-shaken cocktail.</span>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     SECTION 4 · VISUAL LAYERING SANDBOX
+     ════════════════════════════════════════ -->
+<section class="section" id="sec-3">
+  <h2 class="section-title">Liquid <span>Layering</span></h2>
+  <p class="section-desc">Simulate a layered drink. Heaviest liquid must be at the bottom — the studio checks your stacking order in real time.</p>
+
+  <div class="layer-builder">
+    <div class="layer-controls">
+      <div id="layer-slots"></div>
+      <div class="card" style="margin-top:0.5rem;">
+        <div class="card-label">✦ Density Reference</div>
+        <div id="density-ref" style="display:flex;flex-direction:column;gap:0.3rem;"></div>
+      </div>
+    </div>
+    <div class="glass-visual">
+      <div class="glass-wrap">
+        <div class="liquid-layers" id="liquid-layers"></div>
+        <svg class="glass-svg" viewBox="0 0 120 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Highball glass outline -->
+          <path d="M15 10 L10 220 Q10 228 18 228 L102 228 Q110 228 110 220 L105 10 Z"
+            fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
+          <!-- Highlight reflection -->
+          <path d="M22 20 L18 200" stroke="rgba(255,255,255,0.07)" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div id="layer-status" class="status-badge warn" style="display:none;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer style="text-align:center;padding:2rem 1rem;border-top:1px solid var(--border);margin-top:2rem;">
+  <div class="ornament">— ✦ —</div>
+  <p style="font-size:0.7rem;color:var(--text-muted);margin-top:0.5rem;font-family:'DM Mono',monospace;letter-spacing:0.08em;">
+    CRAFT MOCKTAIL STUDIO · ZERO PROOF · FULL FLAVOUR
+  </p>
+</footer>
+
+<script>
+/* ══════════════════════════════════════
+   DATA
+══════════════════════════════════════ */
+const INGREDIENTS = [
+  { category: 'Citrus', icon: '🍋', items: ['Lemon', 'Lime', 'Grapefruit', 'Orange', 'Yuzu'] },
+  { category: 'Sweeteners', icon: '🍯', items: ['Simple Syrup', 'Honey', 'Agave', 'Grenadine', 'Maple Syrup'] },
+  { category: 'Herbs', icon: '🌿', items: ['Mint', 'Basil', 'Rosemary', 'Thyme', 'Lavender'] },
+  { category: 'Mixers', icon: '🫧', items: ['Club Soda', 'Ginger Beer', 'Tonic Water', 'Sparkling Water', 'Coconut Water'] },
+  { category: 'Juices', icon: '🥤', items: ['Pineapple Juice', 'Cranberry Juice', 'Mango Juice', 'Cucumber Juice', 'Pomegranate Juice'] },
+  { category: 'Bitters & Spice', icon: '🌶️', items: ['Angostura Bitters', 'Jalapeño', 'Cardamom', 'Cinnamon', 'Star Anise'] },
+];
+
+const FLAVOR_MAP = {
+  'Lemon':     { tags: ['citrus','sour'], profile: 'bright' },
+  'Lime':      { tags: ['citrus','sour'], profile: 'bright' },
+  'Grapefruit':{ tags: ['citrus','bitter'], profile: 'complex' },
+  'Orange':    { tags: ['citrus','sweet'], profile: 'balanced' },
+  'Yuzu':      { tags: ['citrus','floral'], profile: 'complex' },
+  'Simple Syrup':{ tags: ['sweet'], profile: 'balanced' },
+  'Honey':     { tags: ['sweet','floral'], profile: 'warm' },
+  'Agave':     { tags: ['sweet'], profile: 'clean' },
+  'Grenadine': { tags: ['sweet','fruity'], profile: 'fruity' },
+  'Maple Syrup':{ tags: ['sweet','spicy'], profile: 'warm' },
+  'Mint':      { tags: ['herbal','fresh'], profile: 'refreshing' },
+  'Basil':     { tags: ['herbal'], profile: 'complex' },
+  'Rosemary':  { tags: ['herbal','piney'], profile: 'complex' },
+  'Thyme':     { tags: ['herbal'], profile: 'complex' },
+  'Lavender':  { tags: ['floral','herbal'], profile: 'floral' },
+  'Club Soda': { tags: ['fizzy'], profile: 'refreshing' },
+  'Ginger Beer':{ tags: ['fizzy','spicy'], profile: 'bold' },
+  'Tonic Water':{ tags: ['fizzy','bitter'], profile: 'complex' },
+  'Sparkling Water':{ tags: ['fizzy'], profile: 'clean' },
+  'Coconut Water':{ tags: ['sweet','tropical'], profile: 'tropical' },
+  'Pineapple Juice':{ tags: ['sweet','tropical','fruity'], profile: 'tropical' },
+  'Cranberry Juice':{ tags: ['sour','bitter','fruity'], profile: 'tart' },
+  'Mango Juice':{ tags: ['sweet','tropical','fruity'], profile: 'tropical' },
+  'Cucumber Juice':{ tags: ['fresh','herbal'], profile: 'refreshing' },
+  'Pomegranate Juice':{ tags: ['sour','sweet','fruity'], profile: 'tart' },
+  'Angostura Bitters':{ tags: ['bitter','spicy'], profile: 'complex' },
+  'Jalapeño':  { tags: ['spicy'], profile: 'bold' },
+  'Cardamom':  { tags: ['spicy','floral'], profile: 'exotic' },
+  'Cinnamon':  { tags: ['spicy','sweet'], profile: 'warm' },
+  'Star Anise':{ tags: ['spicy'], profile: 'complex' },
+};
+
+const RATIOS = {
+  citrus_sweet: { name: 'The Classic Sour', formula: '2 parts base · ¾ sour · ¾ sweet' },
+  fizzy_citrus: { name: 'The Collins Ratio', formula: '2 parts base · 1 sour · ½ sweet · 2 mixer' },
+  fizzy:        { name: 'The Spritz Ratio', formula: '3 parts mixer · 1 part juice · ½ sweetener' },
+  spicy_citrus: { name: 'The Mule Ratio', formula: '2 parts base · ½ lime · 3 parts ginger beer' },
+  bitter_complex:{ name: 'The Bitter-Forward Build', formula: '1½ base · ¾ bitter · ½ sweet modifier' },
+  herbal_citrus:{ name: 'The Garden Smash', formula: '2 parts base · ¾ sour · ¾ sweet · muddled herbs' },
+  tropical:     { name: 'The Tiki Build', formula: '2 parts juice · ½ lime · ½ sweetener · splash soda' },
+  default:      { name: 'The Spirit-Forward Ratio', formula: '2 parts base · ½ modifier · ice & stir' },
+};
+
+const MOCKTAIL_MATRIX = [
+  {
+    id: 'moscow-mule',
+    name: 'Virgin Moscow Mule',
+    archetype: 'MULE · Spicy & Refreshing',
+    mood: ['refreshing','spicy','crisp','bright','summery','hot day','light','zesty'],
+    required: ['Lime', 'Ginger Beer'],
+    optional: ['Mint'],
+    steps: [
+      'Fill a copper mug or tall glass with crushed ice.',
+      'Squeeze ½ lime (1 oz) directly into the glass.',
+      'Add 3 oz ginger beer — pour slowly to preserve fizz.',
+      'Garnish with a lime wheel and fresh mint sprig.',
+      'Stir gently once from the bottom.',
+    ],
+    notes: 'A fiery, effervescent sip with bright citrus and warming ginger heat. Incredibly refreshing on a hot day. The copper mug keeps it ice-cold — don\'t skip it if you have one.',
+    missing_note: 'This mule needs its kick. Grab these to complete the build:',
+  },
+  {
+    id: 'hugo-spritz',
+    name: 'Hugo Spritz Mocktail',
+    archetype: 'SPRITZ · Floral & Effervescent',
+    mood: ['light','floral','elegant','brunch','aperitif','refreshing','summery','feminine','delicate'],
+    required: ['Sparkling Water', 'Mint'],
+    optional: ['Lime', 'Lavender', 'Simple Syrup', 'Elderflower'],
+    steps: [
+      'Fill a wine glass with ice.',
+      'Add ½ oz elderflower cordial (or lavender simple syrup) over the ice.',
+      'Squeeze in ½ lime for brightness.',
+      'Top with 4 oz sparkling water — pour down the side of the glass.',
+      'Garnish with a fresh mint sprig and lime slice.',
+    ],
+    notes: 'Ethereal, barely-there sweetness with floral depth and herb freshness. This is the aperitivo-hour drink that doesn\'t need alcohol to feel luxurious.',
+    missing_note: 'Two items will unlock this spritz:',
+  },
+  {
+    id: 'bitter-negroni',
+    name: 'Zero-Proof Negroni Riff',
+    archetype: 'BITTER · Complex & Brooding',
+    mood: ['bitter','complex','cozy','sophisticated','stirred','moody','rainy','evening','dark','spirit-forward','rich'],
+    required: ['Tonic Water', 'Angostura Bitters'],
+    optional: ['Orange', 'Simple Syrup', 'Star Anise'],
+    steps: [
+      'Add ice to a rocks glass — a single large cube is ideal.',
+      'Pour ½ oz simple syrup and 2 dashes Angostura bitters.',
+      'Add 2 oz tonic water (the quinine provides bitterness).',
+      'Express an orange peel over the glass: squeeze it skin-side-down over the drink.',
+      'Drop in a star anise for aromatics if you have it.',
+    ],
+    notes: 'Bitter, herbaceous, and quietly complex. The orange oil on the nose makes it feel spirit-forward. Sip slowly. This one rewards patience.',
+    missing_note: 'The soul of this cocktail comes from:',
+  },
+  {
+    id: 'lime-collins',
+    name: 'Citrus Collins',
+    archetype: 'COLLINS · Tart & Effervescent',
+    mood: ['tart','refreshing','classic','crisp','fizzy','easy','crowd-pleaser','light','session'],
+    required: ['Lemon', 'Simple Syrup', 'Club Soda'],
+    optional: ['Lime', 'Mint'],
+    steps: [
+      'Combine 1 oz lemon juice and ¾ oz simple syrup in a tall glass.',
+      'Fill with ice to the top.',
+      'Top with 3 oz club soda — pour gently over a bar spoon.',
+      'Stir once, very gently, from the bottom only.',
+      'Garnish with a lemon wheel and optional mint.',
+    ],
+    notes: 'The quintessential long drink. Tart lemon, balanced sweetness, and dancing bubbles. This format is endlessly riffable — try basil, grapefruit, or pomegranate as variations.',
+    missing_note: 'The Collins trinity is nearly complete — you\'re missing:',
+  },
+  {
+    id: 'tropical-punch',
+    name: 'Tropical Garden Punch',
+    archetype: 'TIKI · Fruity & Exotic',
+    mood: ['tropical','fruity','party','fun','sweet','exotic','vacation','bright','festive'],
+    required: ['Pineapple Juice', 'Lime'],
+    optional: ['Coconut Water', 'Grenadine', 'Mango Juice', 'Club Soda', 'Mint'],
+    steps: [
+      'Combine 3 oz pineapple juice and 1 oz lime juice in a shaker with ice.',
+      'Add ½ oz grenadine for color and body.',
+      'Shake hard for 10 seconds — this drink loves the chill.',
+      'Strain over fresh ice in a tall glass or tiki mug.',
+      'Top with a splash of club soda and garnish with a pineapple wedge and mint.',
+    ],
+    notes: 'Sunshine in a glass. The natural sweetness of pineapple balanced by lime tartness creates a drink that transports you somewhere with palm trees. Add a paper umbrella — you\'ve earned it.',
+    missing_note: 'To get to the tropics, you\'ll need:',
+  },
+  {
+    id: 'herb-smash',
+    name: 'Garden Herb Smash',
+    archetype: 'SMASH · Herbal & Bright',
+    mood: ['herbal','garden','fresh','botanical','grassy','green','spring','complex','aromatic'],
+    required: ['Mint', 'Lemon', 'Simple Syrup'],
+    optional: ['Basil', 'Club Soda', 'Cucumber Juice', 'Thyme'],
+    steps: [
+      'Add 8-10 fresh mint leaves (+ basil if available) to a shaker.',
+      'Add ¾ oz simple syrup and muddle gently — press, don\'t shred.',
+      'Add 1 oz lemon juice and a large handful of ice.',
+      'Shake vigorously for 12 seconds.',
+      'Double-strain (use a fine mesh) into a rocks glass over fresh ice.',
+      'Top with a splash of club soda and garnish with a herb sprig.',
+    ],
+    notes: 'Vivid green, aromatic, and surprisingly complex. Muddling extracts the essential oils without bitterness. The double-strain keeps it silky. This is the drink that makes herb gardeners proud.',
+    missing_note: 'Almost there — pick up these for the smash:',
+  },
+  {
+    id: 'spiced-cider',
+    name: 'Warm Spiced Cider Riff',
+    archetype: 'HOT BUILD · Cozy & Warming',
+    mood: ['cozy','warm','spicy','winter','autumn','fall','cold','hearty','holiday','evening','comforting'],
+    required: ['Cinnamon', 'Honey'],
+    optional: ['Star Anise', 'Orange', 'Cardamom', 'Thyme'],
+    steps: [
+      'In a small pot, gently heat 8 oz apple juice or pomegranate juice (do not boil).',
+      'Add 1 cinnamon stick, 1 star anise, and 2 cardamom pods.',
+      'Let steep on low heat for 5 minutes.',
+      'Strain into a warmed mug.',
+      'Stir in 1 tsp honey until dissolved.',
+      'Garnish with an orange slice studded with cloves.',
+    ],
+    notes: 'The liquid equivalent of a cashmere sweater. This warm build doesn\'t need a shaker or ice — just patience and the smell that fills the kitchen while it steeps.',
+    missing_note: 'This cozy build needs warming spices:',
+  },
+  {
+    id: 'grapefruit-paloma',
+    name: 'Zero-Proof Paloma',
+    archetype: 'PALOMA · Tart & Bittersweet',
+    mood: ['grapefruit','bitter','tart','crisp','brunch','light','bittersweet','Mexico','refreshing'],
+    required: ['Grapefruit', 'Lime', 'Club Soda'],
+    optional: ['Agave', 'Simple Syrup', 'Salt'],
+    steps: [
+      'Salt the rim of a tall glass (wet the rim with a lime wedge first).',
+      'Fill with ice.',
+      'Squeeze 1 full grapefruit (about 2 oz juice) and ½ lime into the glass.',
+      'Add ½ oz agave syrup and stir to combine.',
+      'Top with 3 oz club soda and stir once gently.',
+      'Garnish with a grapefruit half-wheel.',
+    ],
+    notes: 'The Paloma is arguable the world\'s greatest two-ingredient cocktail — and it barely needs the spirit. Bittersweet grapefruit, tart lime, and bubbles. The salted rim is non-negotiable.',
+    missing_note: 'The Paloma is almost yours — just grab:',
+  },
+];
+
+/* ══════════════════════════════════════
+   SECTION 1 — INVENTORY
+══════════════════════════════════════ */
+
+/* ── localStorage keys ── */
+const LS_KEY         = 'cms_inventory_v1';
+const LS_CUSTOM_KEY  = 'cms_custom_ingredients_v1';
+
+/* ── Custom ingredients: { name, category }[] ── */
+function loadCustomIngredients() {
+  try {
+    const raw = localStorage.getItem(LS_CUSTOM_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+function saveCustomIngredients() {
+  try {
+    localStorage.setItem(LS_CUSTOM_KEY, JSON.stringify(customIngredients));
+  } catch {}
+}
+
+let customIngredients = loadCustomIngredients();
+
+/* ── Checked state ── */
+function loadInventoryFromStorage() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch { return new Set(); }
+}
+
+function saveInventoryToStorage() {
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify([...checkedIngredients]));
+  } catch {}
+}
+
+let checkedIngredients = loadInventoryFromStorage();
+
+/* ── Helpers ── */
+function slugId(name) { return name.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '_'); }
+
+/* ── Build / rebuild the full grid ── */
+function buildInventory() {
+  const grid = document.getElementById('ingredient-grid');
+  grid.innerHTML = '';
+
+  INGREDIENTS.forEach(cat => {
+    // Gather custom items for this category
+    const customForCat = customIngredients.filter(c => c.category === cat.category);
+
+    const card = document.createElement('div');
+    card.className = 'category-card';
+    card.dataset.category = cat.category;
+
+    // Static items
+    const staticRows = cat.items.map(item => makeStaticRow(item)).join('');
+
+    // Custom items for this category (will be appended below)
+    card.innerHTML = `
+      <div class="category-icon">${cat.icon}</div>
+      <div class="category-name">${cat.category}</div>
+      <div class="ingredient-list" id="list-${slugId(cat.category)}">
+        ${staticRows}
+      </div>
+    `;
+    grid.appendChild(card);
+
+    // Append custom rows
+    const list = card.querySelector('.ingredient-list');
+    customForCat.forEach(c => list.appendChild(makeCustomRow(c.name)));
+  });
+
+  /* Restore checkbox state */
+  checkedIngredients.forEach(name => {
+    const lbl = document.getElementById(`lbl-${slugId(name)}`);
+    if (!lbl) return;
+    const cb = lbl.querySelector('input[type="checkbox"]');
+    if (cb) cb.checked = true;
+    lbl.classList.add('checked');
+  });
+}
+
+function makeStaticRow(item) {
+  const id = slugId(item);
+  return `
+    <label class="ingredient-item" id="lbl-${id}">
+      <input type="checkbox" value="${item}" onchange="toggleIngredient('${item}', this.checked)">
+      <span class="ingredient-label">${item}</span>
+    </label>`;
+}
+
+function makeCustomRow(name) {
+  const id = slugId(name);
+  const el = document.createElement('label');
+  el.className = 'ingredient-item custom-ingredient';
+  el.id = `lbl-${id}`;
+  el.innerHTML = `
+    <span class="ingredient-left">
+      <input type="checkbox" value="${name}" onchange="toggleIngredient('${name}', this.checked)">
+      <span class="ingredient-label">${name}</span>
+      <span class="custom-badge">custom</span>
+    </span>
+    <button class="btn-delete-ingredient" title="Remove ${name}"
+      onclick="deleteCustomIngredient('${name}', event)">&#x2715;</button>
+  `;
+  return el;
+}
+
+/* ── Add custom ingredient ── */
+function addCustomIngredient() {
+  const input    = document.getElementById('custom-ingredient-input');
+  const catSelect= document.getElementById('custom-cat-select');
+  const name     = input.value.trim();
+  const category = catSelect.value;
+
+  if (!name) { input.focus(); return; }
+
+  // Deduplicate across both built-in and custom lists
+  const allNames = [
+    ...INGREDIENTS.flatMap(c => c.items),
+    ...customIngredients.map(c => c.name),
+  ].map(n => n.toLowerCase());
+
+  if (allNames.includes(name.toLowerCase())) {
+    input.select();
+    flashCreator('exists');
+    return;
+  }
+
+  // Save
+  customIngredients.push({ name, category });
+  saveCustomIngredients();
+
+  // Inject into the DOM immediately — no full rebuild
+  const list = document.getElementById(`list-${slugId(category)}`);
+  if (list) {
+    const row = makeCustomRow(name);
+    row.classList.add('slide-in');
+    list.appendChild(row);
+  }
+
+  // Pre-check it and register as checked
+  checkedIngredients.add(name);
+  saveInventoryToStorage();
+  const lbl = document.getElementById(`lbl-${slugId(name)}`);
+  if (lbl) {
+    const cb = lbl.querySelector('input[type="checkbox"]');
+    if (cb) cb.checked = true;
+    lbl.classList.add('checked');
+  }
+
+  updateFlavorPanel();
+  flashCreator('ok');
+  input.value = '';
+  input.focus();
+}
+
+/* ── Delete custom ingredient ── */
+function deleteCustomIngredient(name, event) {
+  event.preventDefault();
+  event.stopPropagation();
+
+  // Remove from data
+  customIngredients = customIngredients.filter(c => c.name !== name);
+  saveCustomIngredients();
+
+  // Remove from checked set
+  checkedIngredients.delete(name);
+  saveInventoryToStorage();
+
+  // Animate out then remove the DOM row
+  const lbl = document.getElementById(`lbl-${slugId(name)}`);
+  if (lbl) {
+    lbl.style.transition = 'opacity 0.2s, transform 0.2s';
+    lbl.style.opacity = '0';
+    lbl.style.transform = 'translateX(-10px)';
+    setTimeout(() => lbl.remove(), 210);
+  }
+
+  updateFlavorPanel();
+}
+
+/* ── Flash feedback on the creator card ── */
+function flashCreator(type) {
+  const el = document.getElementById('custom-creator');
+  if (!el) return;
+  el.classList.remove('flash');
+  void el.offsetWidth; // reflow to restart animation
+  el.classList.add('flash');
+  // Temporarily tint border for "exists" case
+  if (type === 'exists') {
+    el.style.borderColor = 'rgba(194,107,58,0.6)';
+    setTimeout(() => { el.style.borderColor = ''; el.classList.remove('flash'); }, 800);
+  } else {
+    setTimeout(() => el.classList.remove('flash'), 600);
+  }
+}
+
+function toggleIngredient(name, checked) {
+  if (checked) checkedIngredients.add(name);
+  else checkedIngredients.delete(name);
+  const lbl = document.getElementById(`lbl-${slugId(name)}`);
+  if (lbl) lbl.classList.toggle('checked', checked);
+  saveInventoryToStorage();
+  updateFlavorPanel();
+}
+
+function updateFlavorPanel() {
+  const panel = document.getElementById('flavor-output');
+  const selected = Array.from(checkedIngredients);
+  if (selected.length === 0) {
+    panel.innerHTML = '<div class="flavor-empty">Select ingredients above to reveal your flavor profile →</div>';
+    return;
+  }
+
+  // Collect all tags
+  const tagCounts = {};
+  selected.forEach(i => {
+    const info = FLAVOR_MAP[i];
+    if (!info) return;
+    info.tags.forEach(t => { tagCounts[t] = (tagCounts[t] || 0) + 1; });
+  });
+
+  const tags = Object.keys(tagCounts).sort((a,b) => tagCounts[b]-tagCounts[a]);
+
+  // Pick ratio
+  const hasFizzy = tags.includes('fizzy');
+  const hasCitrus = tags.includes('citrus');
+  const hasSweet  = tags.includes('sweet');
+  const hasSpicy  = tags.includes('spicy');
+  const hasBitter = tags.includes('bitter');
+  const hasHerbal = tags.includes('herbal');
+  const hasTropical = tags.includes('tropical');
+
+  let ratio = RATIOS.default;
+  if (hasCitrus && hasSweet && !hasFizzy)  ratio = RATIOS.citrus_sweet;
+  else if (hasFizzy && hasCitrus)          ratio = RATIOS.fizzy_citrus;
+  else if (hasFizzy && !hasCitrus)         ratio = RATIOS.fizzy;
+  else if (hasSpicy && hasCitrus)          ratio = RATIOS.spicy_citrus;
+  else if (hasBitter)                      ratio = RATIOS.bitter_complex;
+  else if (hasHerbal && hasCitrus)         ratio = RATIOS.herbal_citrus;
+  else if (hasTropical)                    ratio = RATIOS.tropical;
+
+  const tagHTML = tags.slice(0,6).map(t => `<div class="flavor-tag tag-${t}">${t}</div>`).join('');
+
+  panel.innerHTML = `
+    <div class="flavor-tags">${tagHTML}</div>
+    <div class="ratio-box">
+      <div class="ratio-name">${ratio.name}</div>
+      <div class="ratio-formula">${ratio.formula}</div>
+    </div>
+  `;
+}
+
+/* ══════════════════════════════════════
+   SECTION 2 — MOOD MATCHER
+══════════════════════════════════════ */
+function matchMood() {
+  const input = document.getElementById('mood-text').value.toLowerCase().trim();
+  if (!input) return;
+
+  const resultEl = document.getElementById('mood-result');
+  resultEl.classList.remove('visible');
+
+  // Score each mocktail by mood keyword matches
+  const scored = MOCKTAIL_MATRIX.map(drink => {
+    let score = 0;
+    drink.mood.forEach(kw => { if (input.includes(kw)) score++; });
+    return { drink, score };
+  }).sort((a,b) => b.score - a.score);
+
+  const best = scored[0].drink;
+
+  // Determine missing ingredients
+  const hasList = Array.from(checkedIngredients);
+  const missing = best.required.filter(r => !hasList.includes(r));
+
+  // Build steps HTML
+  const stepsHTML = best.steps.map((s,i) => `
+    <div class="build-step">
+      <span class="step-num">0${i+1}</span>
+      <span>${s}</span>
+    </div>
+  `).join('');
+
+  // Build missing HTML
+  let missingHTML = '';
+  if (missing.length > 0) {
+    missingHTML = `
+      <div class="missing-box">
+        <div class="missing-title">⚠ Go Grab These</div>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.5rem;">${best.missing_note}</p>
+        ${missing.slice(0,3).map(m => `<div class="missing-item">${m}</div>`).join('')}
+      </div>
+    `;
+  }
+
+  resultEl.innerHTML = `
+    <div class="result-header">
+      <div class="drink-name">${best.name}</div>
+      <div class="drink-archetype">${best.archetype}</div>
+    </div>
+    <div class="result-body">
+      <div class="result-section">
+        <div class="result-section-label">✦ Build Instructions</div>
+        <div class="build-steps">${stepsHTML}</div>
+      </div>
+      <div class="result-section">
+        <div class="result-section-label">✦ Flavour Notes</div>
+        <p class="flavor-notes">${best.notes}</p>
+      </div>
+      ${missingHTML}
+    </div>
+  `;
+
+  setTimeout(() => resultEl.classList.add('visible'), 50);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.id === 'mood-text' && e.metaKey) matchMood();
+});
+
+/* ══════════════════════════════════════
+   SECTION 3 — BATCH CALCULATOR
+══════════════════════════════════════ */
+function updateBatch() {
+  const base   = parseFloat(document.getElementById('sl-base').value);
+  const sweet  = parseFloat(document.getElementById('sl-sweet').value);
+  const sour   = parseFloat(document.getElementById('sl-sour').value);
+  const mixer  = parseFloat(document.getElementById('sl-mixer').value);
+  const guests = parseInt(document.getElementById('sl-guests').value);
+
+  document.getElementById('val-base').textContent   = base.toFixed(2) + ' oz';
+  document.getElementById('val-sweet').textContent  = sweet.toFixed(2) + ' oz';
+  document.getElementById('val-sour').textContent   = sour.toFixed(2) + ' oz';
+  document.getElementById('val-mixer').textContent  = mixer.toFixed(2) + ' oz';
+  document.getElementById('val-guests').textContent = guests;
+
+  const preShaker = base + sweet + sour;
+  const dilution  = preShaker * 0.20;
+  const singleTotal = preShaker + dilution + mixer;
+
+  const rowsEl = document.getElementById('batch-rows');
+  rowsEl.innerHTML = '';
+
+  const oztoCups = oz => (oz / 8).toFixed(2);
+  const batchedRows = [
+    { label: 'Base / Spirit', single: base, class: '' },
+    { label: 'Sweetener',     single: sweet, class: '' },
+    { label: 'Sour / Acid',   single: sour, class: '' },
+    { label: 'Mixer / Top-off',single: mixer, class: '' },
+    { label: '<strong>Ice Melt / Dilution</strong>',
+      single: dilution, class: 'dilution',
+      sub: '<span style="font-size:0.68rem;color:var(--teal);font-family:DM Mono,monospace;">20% of pre-mixer vol</span>' },
+    { label: `<strong>Single Serving Total</strong>`, single: singleTotal, class: 'total' },
+    { label: `<strong>Batch for ${guests} Guests</strong>`, single: singleTotal * guests, class: 'total', noScale: true },
+  ];
+
+  batchedRows.forEach((r, i) => {
+    const scaled = r.noScale ? r.single : r.single * guests;
+    const row = document.createElement('div');
+    row.className = `batch-row ${r.class}`;
+    row.innerHTML = `
+      <div class="row-label">${r.label}${r.sub ? '<br>'+r.sub : ''}</div>
+      <div class="row-values">
+        <div class="val-oz">${scaled.toFixed(2)} oz</div>
+        <div class="val-cups">${(scaled/8).toFixed(2)} c</div>
+      </div>
+    `;
+    rowsEl.appendChild(row);
+  });
+}
+
+/* ══════════════════════════════════════
+   SECTION 4 — LAYERING SANDBOX
+══════════════════════════════════════ */
+const LIQUIDS = [
+  { name: 'Grenadine',       density: 1.18, color: '#b52c2c', colorDim: 'rgba(181,44,44,0.85)' },
+  { name: 'Honey Syrup',     density: 1.13, color: '#d4851a', colorDim: 'rgba(212,133,26,0.85)' },
+  { name: 'Simple Syrup',    density: 1.08, color: '#c8a050', colorDim: 'rgba(200,160,80,0.75)' },
+  { name: 'Cranberry Juice', density: 1.07, color: '#8b1f3e', colorDim: 'rgba(139,31,62,0.85)' },
+  { name: 'Pomegranate Juice',density:1.06, color: '#a02040', colorDim: 'rgba(160,32,64,0.8)' },
+  { name: 'Pineapple Juice', density: 1.05, color: '#d4a82a', colorDim: 'rgba(212,168,42,0.85)' },
+  { name: 'Orange Juice',    density: 1.04, color: '#e07830', colorDim: 'rgba(224,120,48,0.85)' },
+  { name: 'Ginger Beer',     density: 1.02, color: '#c8b060', colorDim: 'rgba(200,176,96,0.7)' },
+  { name: 'Tonic Water',     density: 1.01, color: '#b0c8d0', colorDim: 'rgba(176,200,208,0.7)' },
+  { name: 'Club Soda',       density: 1.00, color: '#90b8d0', colorDim: 'rgba(144,184,208,0.65)' },
+  { name: 'Sparkling Water', density: 1.00, color: '#a0c0d8', colorDim: 'rgba(160,192,216,0.6)' },
+  { name: 'Coconut Water',   density: 1.00, color: '#d4e4c8', colorDim: 'rgba(212,228,200,0.75)' },
+  { name: 'Mint Syrup',      density: 1.08, color: '#2d8b5a', colorDim: 'rgba(45,139,90,0.8)' },
+  { name: 'Blue Curacao (NA)',density: 1.06, color: '#1a60b8', colorDim: 'rgba(26,96,184,0.8)' },
+  { name: 'Rose Water',      density: 1.01, color: '#d4708a', colorDim: 'rgba(212,112,138,0.75)' },
+];
+
+let layerSelections = ['Grenadine','Pineapple Juice','Club Soda'];
+
+function buildLayeringUI() {
+  // Density Reference
+  const refEl = document.getElementById('density-ref');
+  LIQUIDS.forEach(l => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:0.2rem 0;';
+    row.innerHTML = `
+      <div style="display:flex;align-items:center;gap:0.4rem;">
+        <div style="width:10px;height:10px;border-radius:50%;background:${l.color};flex-shrink:0;"></div>
+        <span style="font-size:0.72rem;color:var(--text-dim);">${l.name}</span>
+      </div>
+      <span style="font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--text-muted);">${l.density.toFixed(2)}</span>
+    `;
+    refEl.appendChild(row);
+  });
+
+  // Layer Slots
+  const slotsEl = document.getElementById('layer-slots');
+  ['Top Layer', 'Middle Layer', 'Bottom Layer'].forEach((label, i) => {
+    const slot = document.createElement('div');
+    slot.className = 'layer-slot';
+    const options = LIQUIDS.map(l =>
+      `<option value="${l.name}" ${l.name===layerSelections[i]?'selected':''}>${l.name} (${l.density.toFixed(2)})</option>`
+    ).join('');
+    slot.innerHTML = `
+      <div class="layer-slot-label">${label}</div>
+      <select class="layer-select" id="layer-${i}" onchange="layerChanged(${i}, this.value)">
+        ${options}
+      </select>
+      <div class="density-badge" id="density-${i}">Density: ${(LIQUIDS.find(l=>l.name===layerSelections[i])||LIQUIDS[0]).density.toFixed(2)}</div>
+    `;
+    slotsEl.appendChild(slot);
+  });
+
+  renderGlass();
+}
+
+function layerChanged(index, value) {
+  layerSelections[index] = value;
+  const liq = LIQUIDS.find(l => l.name === value) || LIQUIDS[0];
+  document.getElementById(`density-${index}`).textContent = `Density: ${liq.density.toFixed(2)}`;
+  renderGlass();
+}
+
+function renderGlass() {
+  const layersEl = document.getElementById('liquid-layers');
+  const statusEl = document.getElementById('layer-status');
+
+  // top layer = index 0 (poured last / lightest should be on top)
+  // bottom layer = index 2 (heaviest should be on bottom)
+  const top    = LIQUIDS.find(l => l.name === layerSelections[0]) || LIQUIDS[0];
+  const middle = LIQUIDS.find(l => l.name === layerSelections[1]) || LIQUIDS[0];
+  const bottom = LIQUIDS.find(l => l.name === layerSelections[2]) || LIQUIDS[0];
+
+  // Display order in DOM: bottom first (flex-end)
+  // The liquid-layers div is flex column justify-end, so:
+  // first child = bottom, last child = top in glass
+  layersEl.innerHTML = ['bottom','middle','top'].map((pos, i) => {
+    const liq = i===0 ? bottom : i===1 ? middle : top;
+    return `
+      <div class="liquid-layer" style="background:${liq.colorDim};">
+        <div class="layer-name-overlay">${liq.name}</div>
+      </div>
+    `;
+  }).join('');
+
+  // Check ordering: bottom >= middle >= top (by density)
+  const isGood = bottom.density >= middle.density && middle.density >= top.density;
+  const hasDuplicate = layerSelections[0]===layerSelections[1] || layerSelections[1]===layerSelections[2] || layerSelections[0]===layerSelections[2];
+
+  statusEl.style.display = 'block';
+  if (hasDuplicate) {
+    statusEl.className = 'status-badge warn';
+    statusEl.textContent = '⚠ Select 3 distinct liquids';
+  } else if (isGood) {
+    statusEl.className = 'status-badge good';
+    statusEl.textContent = '✓ Perfect Order! Pour slowly over the back of a spoon.';
+    layersEl.classList.remove('bleed-animation');
+  } else {
+    statusEl.className = 'status-badge warn bleed-animation';
+    statusEl.innerHTML = '⚠ Warning: Layers will bleed together!';
+    layersEl.classList.add('bleed-animation');
+  }
+}
+
+/* ══════════════════════════════════════
+   NAV / TAB SWITCHING
+══════════════════════════════════════ */
+function switchTab(index) {
+  document.querySelectorAll('.section').forEach((s,i) => {
+    s.classList.toggle('active', i === index);
+  });
+  document.querySelectorAll('.nav-tab').forEach((t,i) => {
+    t.classList.toggle('active', i === index);
+  });
+}
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+buildInventory();
+updateFlavorPanel(); /* paint flavor panel from any restored localStorage state */
+updateBatch();
+buildLayeringUI();
+</script>
+</body>
+</html>
