@@ -1,251 +1,1732 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Craft Mocktail Studio</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Craft Mocktail Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --obsidian: #0d0e0f;
+    --deep: #111315;
+    --surface: #181a1c;
+    --card: #1e2124;
+    --card-hover: #242729;
+    --border: #2a2d31;
+    --border-light: #353a3f;
+    --amber: #c8872a;
+    --amber-light: #e8a244;
+    --amber-glow: #f0b55a;
+    --gold: #d4a843;
+    --sage: #7a9e82;
+    --rose: #c26b6b;
+    --teal: #4a9d9d;
+    --lavender: #8b7fba;
+    --text: #e8e4dc;
+    --text-dim: #a09890;
+    --text-muted: #60605a;
+    --success: #5a9e6a;
+    --warning: #c26b3a;
+    --grain-opacity: 0.03;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--obsidian);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    opacity: var(--grain-opacity);
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* ── HEADER ── */
+  .app-header {
+    text-align: center;
+    padding: 3rem 1.5rem 2rem;
+    position: relative;
+  }
+
+  .app-header::after {
+    content: '';
+    display: block;
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--amber), transparent);
+    margin: 1.5rem auto 0;
+  }
+
+  .header-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    opacity: 0.8;
+  }
+
+  .header-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.4rem, 7vw, 4rem);
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    color: var(--text);
+  }
+
+  .header-title em {
+    font-style: italic;
+    color: var(--amber-light);
+  }
+
+  .header-sub {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 0.6rem;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── NAV TABS ── */
+  .nav-tabs {
+    display: flex;
+    gap: 0;
+    padding: 0 1rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: rgba(13,14,15,0.95);
+    backdrop-filter: blur(20px);
+    z-index: 100;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .nav-tabs::-webkit-scrollbar { display: none; }
+
+  .nav-tab {
+    flex-shrink: 0;
+    padding: 1rem 1.2rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    cursor: pointer;
+    border: none;
+    background: none;
+    border-bottom: 2px solid transparent;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+    position: relative;
+    top: 1px;
+  }
+
+  .nav-tab:hover { color: var(--text-dim); }
+
+  .nav-tab.active {
+    color: var(--amber-light);
+    border-bottom-color: var(--amber);
+  }
+
+  /* ── SECTIONS ── */
+  .section {
+    display: none;
+    padding: 2rem 1rem 4rem;
+    max-width: 860px;
+    margin: 0 auto;
+    animation: fadeUp 0.35s ease;
+  }
+
+  .section.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+    font-weight: 400;
+    margin-bottom: 0.3rem;
+    color: var(--text);
+  }
+
+  .section-title span { color: var(--amber-light); font-style: italic; }
+
+  .section-desc {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    transition: border-color 0.2s;
+  }
+
+  .card:hover { border-color: var(--border-light); }
+
+  .card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 0.75rem;
+    opacity: 0.7;
+  }
+
+  /* ── SECTION 1: INVENTORY ── */
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .category-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    transition: border-color 0.2s;
+  }
+
+  .category-icon {
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .category-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--text-dim);
+  }
+
+  .ingredient-list { display: flex; flex-direction: column; gap: 0.4rem; }
+
+  .ingredient-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.35rem 0.5rem;
+    border-radius: 6px;
+    transition: background 0.15s;
+    user-select: none;
+  }
+
+  .ingredient-item:hover { background: rgba(200,135,42,0.06); }
+
+  .ingredient-item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--border-light);
+    border-radius: 4px;
+    flex-shrink: 0;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.15s;
+    background: transparent;
+  }
+
+  .ingredient-item input[type="checkbox"]:checked {
+    background: var(--amber);
+    border-color: var(--amber);
+  }
+
+  .ingredient-item input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 10px;
+    color: var(--obsidian);
+    font-weight: bold;
+  }
+
+  .ingredient-label {
+    font-size: 0.83rem;
+    color: var(--text-dim);
+    transition: color 0.15s;
+  }
+
+  .ingredient-item.checked .ingredient-label { color: var(--text); }
+
+  /* Flavor Profile Output */
+  .flavor-panel {
+    background: linear-gradient(135deg, rgba(200,135,42,0.07), rgba(200,135,42,0.02));
+    border: 1px solid rgba(200,135,42,0.25);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    min-height: 100px;
+    transition: all 0.3s ease;
+  }
+
+  .flavor-panel-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 0.75rem;
+    opacity: 0.7;
+  }
+
+  .flavor-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .flavor-tag {
+    padding: 0.2rem 0.65rem;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.05em;
+    border: 1px solid;
+    animation: tagIn 0.2s ease;
+  }
+
+  @keyframes tagIn {
+    from { opacity: 0; transform: scale(0.85); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  .tag-citrus   { color: #e8c44a; border-color: rgba(232,196,74,0.35); background: rgba(232,196,74,0.06); }
+  .tag-sweet    { color: #c26b6b; border-color: rgba(194,107,107,0.35); background: rgba(194,107,107,0.06); }
+  .tag-herbal   { color: #7a9e82; border-color: rgba(122,158,130,0.35); background: rgba(122,158,130,0.06); }
+  .tag-fizzy    { color: #4a9d9d; border-color: rgba(74,157,157,0.35); background: rgba(74,157,157,0.06); }
+  .tag-spicy    { color: #c26b3a; border-color: rgba(194,107,58,0.35); background: rgba(194,107,58,0.06); }
+  .tag-floral   { color: #8b7fba; border-color: rgba(139,127,186,0.35); background: rgba(139,127,186,0.06); }
+  .tag-bitter   { color: #6b8fb0; border-color: rgba(107,143,176,0.35); background: rgba(107,143,176,0.06); }
+
+  .ratio-box {
+    background: var(--deep);
+    border-radius: 8px;
+    padding: 0.9rem 1.1rem;
+    border-left: 3px solid var(--amber);
+    margin-top: 0.5rem;
+  }
+
+  .ratio-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--amber-light);
+    margin-bottom: 0.25rem;
+  }
+
+  .ratio-formula {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+  }
+
+  .flavor-empty {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    font-style: italic;
+    padding: 1.5rem 0;
+  }
+
+  /* ── SECTION 2: MOOD MATCHER ── */
+  .mood-input-wrap { position: relative; margin-bottom: 1rem; }
+
+  .mood-input {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 300;
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s;
+    line-height: 1.6;
+    min-height: 80px;
+  }
+
+  .mood-input::placeholder { color: var(--text-muted); }
+  .mood-input:focus { border-color: var(--amber); }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--amber);
+    color: var(--obsidian);
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 400;
+  }
+
+  .btn-primary:hover {
+    background: var(--amber-glow);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(200,135,42,0.3);
+  }
+
+  .btn-primary:active { transform: translateY(0); }
+
+  .mood-result {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    display: none;
+    animation: fadeUp 0.3s ease;
+  }
+
+  .mood-result.visible { display: block; }
+
+  .result-header {
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(135deg, rgba(200,135,42,0.12), transparent);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .drink-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    font-weight: 400;
+    color: var(--amber-light);
+    margin-bottom: 0.2rem;
+  }
+
+  .drink-archetype {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .result-body { padding: 1.25rem 1.5rem; }
+
+  .result-section { margin-bottom: 1.25rem; }
+
+  .result-section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    opacity: 0.7;
+    margin-bottom: 0.5rem;
+  }
+
+  .build-steps { display: flex; flex-direction: column; gap: 0.4rem; }
+
+  .build-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .step-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--amber);
+    background: rgba(200,135,42,0.1);
+    border-radius: 4px;
+    padding: 0.1rem 0.35rem;
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+  }
+
+  .flavor-notes {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.65;
+    font-style: italic;
+  }
+
+  /* Missing Ingredients */
+  .missing-box {
+    background: rgba(194,107,58,0.08);
+    border: 1px solid rgba(194,107,58,0.3);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-top: 0.5rem;
+  }
+
+  .missing-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--warning);
+    margin-bottom: 0.5rem;
+  }
+
+  .missing-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    padding: 0.2rem 0;
+  }
+
+  .missing-item::before {
+    content: '→';
+    color: var(--warning);
+    font-size: 0.75rem;
+  }
+
+  /* ── SECTION 3: BATCH CALC ── */
+  .calc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 480px) { .calc-grid { grid-template-columns: 1fr; } }
+
+  .slider-group { display: flex; flex-direction: column; gap: 0.4rem; }
+
+  .slider-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .slider-name {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+
+  .slider-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--amber-light);
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--amber);
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(200,135,42,0.4);
+    transition: transform 0.15s;
+  }
+
+  input[type="range"]::-webkit-slider-thumb:active { transform: scale(1.2); }
+  input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--amber);
+    cursor: pointer;
+    border: none;
+  }
+
+  .guest-slider-wrap {
+    grid-column: 1 / -1;
+  }
+
+  .batch-results {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .batch-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.9rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+
+  .batch-row:last-child { border-bottom: none; }
+  .batch-row:hover { background: var(--card-hover); }
+
+  .batch-row.highlight {
+    background: rgba(200,135,42,0.05);
+    border-left: 3px solid var(--amber);
+  }
+
+  .batch-row.dilution {
+    background: rgba(74,157,157,0.05);
+    border-left: 3px solid var(--teal);
+  }
+
+  .batch-row.total {
+    background: rgba(200,135,42,0.1);
+    border-bottom: none;
+  }
+
+  .row-label { font-size: 0.82rem; color: var(--text-dim); }
+  .row-label strong { color: var(--text); }
+
+  .row-values {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .val-oz {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--text);
+    text-align: right;
+    min-width: 60px;
+  }
+
+  .val-cups {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-align: right;
+    min-width: 50px;
+  }
+
+  .units-header {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 0.5rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .unit-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    min-width: 60px;
+    text-align: right;
+  }
+
+  .unit-label:last-child { min-width: 50px; }
+
+  .dilution-note {
+    font-size: 0.75rem;
+    color: var(--teal);
+    margin-top: 0.75rem;
+    line-height: 1.5;
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  /* ── SECTION 4: LAYERING ── */
+  .layer-builder {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  @media (max-width: 600px) {
+    .layer-builder { grid-template-columns: 1fr; }
+    .glass-visual { order: -1; margin: 0 auto; }
+  }
+
+  .layer-controls { display: flex; flex-direction: column; gap: 0.75rem; }
+
+  .layer-slot {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+    transition: border-color 0.2s;
+  }
+
+  .layer-slot-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .layer-select {
+    width: 100%;
+    background: var(--deep);
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem;
+    padding: 0.5rem 0.75rem;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23a09890'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 8px;
+    padding-right: 2rem;
+  }
+
+  .layer-select:focus { border-color: var(--amber); }
+  .layer-select option { background: var(--card); }
+
+  .density-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    margin-top: 0.35rem;
+  }
+
+  /* Glass Visual */
+  .glass-visual {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .glass-wrap {
+    position: relative;
+    width: 120px;
+    height: 220px;
+  }
+
+  .glass-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+  .liquid-layers {
+    position: absolute;
+    bottom: 14px;
+    left: 10px;
+    right: 10px;
+    height: 185px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    border-radius: 0 0 8px 8px;
+  }
+
+  .liquid-layer {
+    flex: 1;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .liquid-layer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(255,255,255,0.15);
+  }
+
+  .layer-name-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.55rem;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.7);
+    text-transform: uppercase;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+
+  .status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.08em;
+    text-align: center;
+    line-height: 1.4;
+    width: 100%;
+  }
+
+  .status-badge.good {
+    background: rgba(90,158,106,0.12);
+    border: 1px solid rgba(90,158,106,0.35);
+    color: var(--success);
+  }
+
+  .status-badge.warn {
+    background: rgba(194,107,58,0.12);
+    border: 1px solid rgba(194,107,58,0.35);
+    color: var(--warning);
+  }
+
+  .bleed-animation {
+    animation: bleed 2s ease-in-out infinite;
+  }
+
+  @keyframes bleed {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  /* ── DIVIDER ── */
+  .ornament {
+    text-align: center;
+    color: var(--amber);
+    opacity: 0.25;
+    font-size: 0.8rem;
+    margin: 0.5rem 0;
+    letter-spacing: 0.3em;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    .section { padding: 1.5rem 0.75rem 3rem; }
+    .category-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--deep); }
+  ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+
+  /* Loading shimmer */
+  .shimmer {
+    background: linear-gradient(90deg, var(--card) 25%, var(--card-hover) 50%, var(--card) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* Tip chip */
+  .tip-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: rgba(200,135,42,0.08);
+    border: 1px solid rgba(200,135,42,0.18);
+    border-radius: 100px;
+    padding: 0.25rem 0.65rem;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  .tip-chip span { color: var(--amber); }
+
+  /* ── CUSTOM INGREDIENT CREATOR ── */
+  .custom-creator {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    transition: border-color 0.2s;
+  }
+
+  .custom-creator-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    opacity: 0.7;
+    margin-bottom: 0.75rem;
+  }
+
+  .custom-creator-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .custom-text-input {
+    flex: 1 1 160px;
+    background: var(--deep);
+    border: 1px solid var(--border-light);
+    border-radius: 7px;
+    padding: 0.55rem 0.85rem;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem;
+    outline: none;
+    transition: border-color 0.2s;
+    min-width: 0;
+  }
+
+  .custom-text-input::placeholder { color: var(--text-muted); }
+  .custom-text-input:focus { border-color: var(--amber); }
+
+  .custom-cat-select {
+    flex: 0 1 140px;
+    background: var(--deep);
+    border: 1px solid var(--border-light);
+    border-radius: 7px;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem;
+    padding: 0.55rem 2rem 0.55rem 0.75rem;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23a09890'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.65rem center;
+    background-size: 7px;
+    transition: border-color 0.2s;
+    min-width: 0;
+  }
+
+  .custom-cat-select:focus { border-color: var(--amber); }
+  .custom-cat-select option { background: var(--card); }
+
+  .btn-add-ingredient {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: var(--amber);
+    color: var(--obsidian);
+    border: none;
+    border-radius: 7px;
+    padding: 0.55rem 1.1rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-weight: 400;
+    transition: all 0.18s;
+    white-space: nowrap;
+  }
+
+  .btn-add-ingredient:hover {
+    background: var(--amber-glow);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(200,135,42,0.3);
+  }
+
+  .btn-add-ingredient:active { transform: translateY(0); }
+
+  /* Flash feedback */
+  @keyframes creatorFlash {
+    0%   { box-shadow: 0 0 0 0 rgba(200,135,42,0.45); }
+    60%  { box-shadow: 0 0 0 7px rgba(200,135,42,0); }
+    100% { box-shadow: none; }
+  }
+
+  .custom-creator.flash { animation: creatorFlash 0.5s ease; }
+
+  /* Custom ingredient row */
+  .ingredient-item.custom-ingredient { justify-content: space-between; }
+
+  .ingredient-item.custom-ingredient .ingredient-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+    cursor: pointer;
+  }
+
+  .btn-delete-ingredient {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.2rem 0.3rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    line-height: 1;
+    transition: all 0.15s;
+    opacity: 0;
+    margin-left: 0.25rem;
+  }
+
+  .ingredient-item.custom-ingredient:hover .btn-delete-ingredient { opacity: 1; }
+
+  .btn-delete-ingredient:hover {
+    color: var(--warning);
+    background: rgba(194,107,58,0.12);
+  }
+
+  /* "Custom" micro-badge */
+  .custom-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.52rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--amber);
+    background: rgba(200,135,42,0.1);
+    border: 1px solid rgba(200,135,42,0.2);
+    border-radius: 3px;
+    padding: 0.05rem 0.3rem;
+    flex-shrink: 0;
+  }
+
+  /* Slide-in for new rows */
+  @keyframes ingredientSlideIn {
+    from { opacity: 0; transform: translateX(-8px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  .custom-ingredient.slide-in { animation: ingredientSlideIn 0.25s ease; }
+</style>
 </head>
-<body class="bg-amber-50 text-stone-800 min-h-screen font-sans">
+<body>
+
+<header class="app-header">
+  <div class="header-eyebrow">✦ The Art of Alcohol-Free Craft ✦</div>
+  <h1 class="header-title">Craft <em>Mocktail</em> Studio</h1>
+  <p class="header-sub">Your personal zero-proof bar toolkit</p>
+</header>
+
+<nav class="nav-tabs" role="tablist">
+  <button class="nav-tab active" onclick="switchTab(0)" role="tab">01 / Inventory</button>
+  <button class="nav-tab" onclick="switchTab(1)" role="tab">02 / Mood Match</button>
+  <button class="nav-tab" onclick="switchTab(2)" role="tab">03 / Batch Calc</button>
+  <button class="nav-tab" onclick="switchTab(3)" role="tab">04 / Layering</button>
+</nav>
+
+<section class="section active" id="sec-0">
+  <h2 class="section-title">Dynamic <span>Inventory</span></h2>
+  <p class="section-desc">Check what you have on hand. The flavor engine updates in real time.</p>
+
+  <div class="custom-creator" id="custom-creator">
+    <div class="custom-creator-label">&#10022; Custom Ingredient Creator</div>
+    <div class="custom-creator-row">
+      <input
+        type="text"
+        class="custom-text-input"
+        id="custom-ingredient-input"
+        placeholder="Add custom ingredient&hellip;"
+        maxlength="40"
+        autocomplete="off"
+        onkeydown="if(event.key==='Enter') addCustomIngredient()"
+      >
+      <select class="custom-cat-select" id="custom-cat-select">
+        <option value="Citrus">Citrus</option>
+        <option value="Sweeteners">Sweeteners</option>
+        <option value="Herbs">Herbs</option>
+        <option value="Mixers">Mixers</option>
+        <option value="Juices">Juices</option>
+        <option value="Bitters &amp; Spice">Bitters &amp; Spice</option>
+      </select>
+      <button class="btn-add-ingredient" onclick="addCustomIngredient()">+ Add</button>
+    </div>
+  </div>
+
+  <div class="category-grid" id="ingredient-grid"></div>
+
+  <div class="flavor-panel" id="flavor-panel">
+    <div class="flavor-panel-title">✦ Live Flavor Profile</div>
+    <div id="flavor-output">
+      <div class="flavor-empty">Select ingredients above to reveal your flavor profile →</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="sec-1">
+  <h2 class="section-title">Mood <span>Mixologist</span></h2>
+  <p class="section-desc">Describe your vibe. The studio will craft a recipe from your inventory — or tell you exactly what to grab.</p>
+
+  <div class="tip-chip"><span>✦</span> Uses your checked ingredients from Section 01</div>
+
+  <div class="mood-input-wrap">
+    <textarea class="mood-input" id="mood-text" rows="3"
+      placeholder="e.g. 'I want something refreshing and spicy for a hot day'&#10;or 'Something bitter, complex, and cozy for a rainy evening'"></textarea>
+  </div>
+
+  <button class="btn-primary" onclick="matchMood()">
+    ✦ Craft My Drink
+  </button>
+
+  <div style="margin-top:1.25rem;" id="mood-result-wrap">
+    <div class="mood-result" id="mood-result"></div>
+  </div>
+</section>
+
+<section class="section" id="sec-2">
+  <h2 class="section-title">Batch & <span>Dilution</span></h2>
+  <p class="section-desc">Scale any recipe for a crowd. Dilution is auto-calculated at 20% of pre-mixer volume to match a professionally shaken drink.</p>
+
+  <div class="card" style="margin-bottom:1.5rem;">
+    <div class="card-label">✦ Recipe Components (oz per serving)</div>
+    <div class="calc-grid">
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-name">Base / Spirit</span>
+          <span class="slider-value" id="val-base">2.0 oz</span>
+        </div>
+        <input type="range" id="sl-base" min="0.5" max="4" step="0.25" value="2"
+          oninput="updateBatch()">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-name">Sweetener</span>
+          <span class="slider-value" id="val-sweet">0.75 oz</span>
+        </div>
+        <input type="range" id="sl-sweet" min="0" max="2" step="0.25" value="0.75"
+          oninput="updateBatch()">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-name">Sour / Acid</span>
+          <span class="slider-value" id="val-sour">0.75 oz</span>
+        </div>
+        <input type="range" id="sl-sour" min="0" max="2" step="0.25" value="0.75"
+          oninput="updateBatch()">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span class="slider-name">Mixer / Top-off</span>
+          <span class="slider-value" id="val-mixer">2.0 oz</span>
+        </div>
+        <input type="range" id="sl-mixer" min="0" max="6" step="0.25" value="2"
+          oninput="updateBatch()">
+      </div>
+      <div class="slider-group guest-slider-wrap">
+        <div class="slider-label">
+          <span class="slider-name" style="color:var(--amber);">👥 Guests</span>
+          <span class="slider-value" id="val-guests" style="font-size:1rem;">12</span>
+        </div>
+        <input type="range" id="sl-guests" min="1" max="50" step="1" value="12"
+          oninput="updateBatch()">
+      </div>
+    </div>
+  </div>
+
+  <div class="batch-results">
+    <div class="units-header">
+      <div class="unit-label">Fluid oz</div>
+      <div class="unit-label">Cups</div>
+    </div>
+    <div id="batch-rows"></div>
+  </div>
+
+  <div class="dilution-note">
+    <span style="color:var(--teal);">◈</span>
+    <span>Dilution row represents ice melt from shaking. When batching in a pitcher, add this water separately before serving so your drink tastes exactly like a single hand-shaken cocktail.</span>
+  </div>
+</section>
+
+<section class="section" id="sec-3">
+  <h2 class="section-title">Liquid <span>Layering</span></h2>
+  <p class="section-desc">Simulate a layered drink. Heaviest liquid must be at the bottom — the studio checks your stacking order in real time.</p>
+
+  <div class="layer-builder">
+    <div class="layer-controls">
+      <div id="layer-slots"></div>
+      <div class="card" style="margin-top:0.5rem;">
+        <div class="card-label">✦ Density Reference</div>
+        <div id="density-ref" style="display:flex;flex-direction:column;gap:0.3rem;"></div>
+      </div>
+    </div>
+    <div class="glass-visual">
+      <div class="glass-wrap">
+        <div class="liquid-layers" id="liquid-layers"></div>
+        <svg class="glass-svg" viewBox="0 0 120 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 10 L10 220 Q10 228 18 228 L102 228 Q110 228 110 220 L105 10 Z"
+            fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.18)" stroke-width="2.5" />
+          <path d="M12 216 L108 216" stroke="rgba(255,255,255,0.1)" stroke-width="2" />
+        </svg>
+      </div>
+      <div id="layer-status-badge" style="width:100%;"></div>
+    </div>
+  </div>
+</section>
+
+<div class="ornament">✦ 🌟 ✦</div>
+
+<script>
+  /* ══════════════════════════════════════════════
+     CORE APPARATUS DATA STRUCTS
+     ══════════════════════════════════════════════ */
+  const INGREDIENT_DATABASE = {
+    "Citrus": [
+      { name: "Fresh Lime Juice", tags: ["citrus","sour"] },
+      { name: "Fresh Lemon Juice", tags: ["citrus","sour"] },
+      { name: "Yuzu Extract", tags: ["citrus","sour","bitter"] },
+      { name: "White Grapefruit Juice", tags: ["citrus","bitter","sour"] }
+    ],
+    "Sweeteners": [
+      { name: "Rich Demerara Syrup", tags: ["sweet","cozy"] },
+      { name: "Fiery Ginger Syrup", tags: ["sweet","spicy"] },
+      { name: "Honey Water Blend", tags: ["sweet","floral"] },
+      { name: "Hibiscus Cordial", tags: ["sweet","floral","citrus"] },
+      { name: "Agave Nectar", tags: ["sweet"] }
+    ],
+    "Herbs": [
+      { name: "Muddled Spearmint", tags: ["herbal","refreshing"] },
+      { name: "Bruised Rosemary Sprig", tags: ["herbal","cozy"] },
+      { name: "Fresh Sweet Basil", tags: ["herbal","floral"] },
+      { name: "Thai Basil Leaves", tags: ["herbal","spicy"] }
+    ],
+    "Mixers": [
+      { name: "Premium Tonic Water", tags: ["fizzy","bitter","citrus"] },
+      { name: "Artisanal Ginger Beer", tags: ["fizzy","spicy","sweet"] },
+      { name: "Top-Tier Club Soda", tags: ["fizzy","refreshing"] },
+      { name: "Sparkling Apple Cider", tags: ["fizzy","sweet","cozy"] }
+    ],
+    "Juices": [
+      { name: "Cloudy Apple Juice", tags: ["sweet","cozy"] },
+      { name: "Unsweetened Cranberry", tags: ["sour","bitter"] },
+      { name: "Pineapple Nectar", tags: ["sweet","citrus"] }
+    ],
+    "Bitters & Spice": [
+      { name: "Non-Alc Aromatic Bitters", tags: ["bitter","cozy","spicy"] },
+      { name: "Fresh Jalapeno Wheels", tags: ["spicy","refreshing"] },
+      { name: "Chili Tincture Dropper", tags: ["spicy"] },
+      { name: "Grated Nutmeg Sprinkle", tags: ["cozy","spicy"] }
+    ]
+  };
+
+  const MOCKTAIL_MATRIX = [
+    {
+      name: "Crimson Alchemist Spritz",
+      archetype: "Vibrant Highball",
+      mood: ["refreshing", "floral", "fruity", "sweet", "fizzy"],
+      required: ["Hibiscus Cordial", "Fresh Lime Juice", "Top-Tier Club Soda"],
+      notes: "Captivating ruby-red aesthetics anchored by high-acidity citrus balancing dense crimson floral botanicals.",
+      steps: [
+        "Incorporate 0.75 oz Hibiscus Cordial and 0.75 oz Fresh Lime Juice into tin.",
+        "Add clean ice spheres, shake vigorously for exactly 10 seconds.",
+        "Strain over clear cracked ice into a chilled highball chamber.",
+        "Top slowly with 3 oz Top-Tier Club Soda; allow density bleed to settle naturally."
+      ]
+    },
+    {
+      name: "Obsidian Ginger Mule",
+      archetype: "Spicy Buck Variant",
+      mood: ["spicy", "sweet", "fizzy", "refreshing", "bold"],
+      required: ["Fiery Ginger Syrup", "Fresh Lime Juice", "Artisanal Ginger Beer", "Fresh Jalapeno Wheels"],
+      notes: "Double-blind heat allocation structure stacking capsicum spice against carbonated ginger extraction matrices.",
+      steps: [
+        "Press 2 thin cut Jalapeno Wheels gently into shaker foundation layer.",
+        "Introduce 0.5 oz Fiery Ginger Syrup along with 1 oz Fresh Lime Juice.",
+        "Flash shake with standard cubes; dump unfiltered content cleanly into heavy vessel.",
+        "Charge perimeter gap space with Artisanal Ginger Beer until brim lines sync."
+      ]
+    },
+    {
+      name: "Emerald Sanctuary Sour",
+      archetype: "Herbal Coupe Expression",
+      mood: ["herbal", "sour", "cozy", "complex", "bitter"],
+      required: ["Muddled Spearmint", "Fresh Lemon Juice", "Honey Water Blend", "Non-Alc Aromatic Bitters"],
+      notes: "Earthy mint-chlorophyll expressions suspended across high-gravity raw floral sugars and acid structures.",
+      steps: [
+        "Muddle clean Spearmint leaves softly with 0.75 oz Honey Water Blend directly inside mixing tin.",
+        "Pour 1 oz Fresh Lemon Juice, adding 3 custom dashes of Aromatic Bitters.",
+        "Pack tin with maximum ice load, execution sequence requires deep cold shock shake.",
+        "Fine strain over fine mesh grid completely removing sediment into clear glassware."
+      ]
+    },
+    {
+      name: "Winterwood Orchard Toddy",
+      archetype: "Aromatic Comfort Warmer",
+      mood: ["cozy", "sweet", "complex", "spicy"],
+      required: ["Cloudy Apple Juice", "Rich Demerara Syrup", "Bruised Rosemary Sprig", "Grated Nutmeg Sprinkle"],
+      notes: "Rich wood-phenols triggered by warm apple sugars meeting aromatic micro-shavings of warm baking spice.",
+      steps: [
+        "Warm 4.5 oz Cloudy Apple Juice under soft indirect thermal element.",
+        "Stir in 0.5 oz Rich Demerara Syrup till viscometer variables flatten completely.",
+        "Drop Bruised Rosemary Sprig directly into clear mug vessel to infuse essential oils.",
+        "Pour thermal balance directly across sprig array, finishing with freshly planed Nutmeg."
+      ]
+    }
+  ];
+
+  const LAYER_FLUID_MAP = [
+    { id: "grenadine", name: "Pomegranate Grenadine", sg: 1.33, color: "linear-gradient(180deg, #9b1c1c, #6b0f0f)" },
+    { id: "rich-syrup", name: "Rich Cane Sugar Syrup (2:1)", sg: 1.24, color: "linear-gradient(180deg, #d4af37, #aa7c11)" },
+    { id: "pineapple", name: "Pure Pineapple Juice Concentrate", sg: 1.09, color: "linear-gradient(180deg, #e3a813, #b88105)" },
+    { id: "lime", name: "Fresh Expressed Lime Juice", sg: 1.03, color: "linear-gradient(180deg, #8cb83e, #628723)" },
+    { id: "water", name: "Pure Distilled H2O / Tea Brew", sg: 1.00, color: "linear-gradient(180deg, #4aa3a3, #2b7070)" },
+    { id: "tonic", name: "Standard Carbonated Tonic Layer", sg: 1.02, color: "linear-gradient(180deg, #7bb8b8, #4e8787)" },
+    { id: "cold-brew", name: "Concentrated Specialty Cold Brew", sg: 0.99, color: "linear-gradient(180deg, #3d2616, #1f1107)" }
+  ];
+
+  /* STATE MANAGEMENT CACHING ARRAYS */
+  let checkedIngredients = new Set();
+  let customIngredientsStorage = [];
+
+  /* TAB CONTROLLER SYSTEM SWITCH MECHANISM */
+  function switchTab(index) {
+    document.querySelectorAll('.nav-tab').forEach((t, i) => {
+      t.classList.toggle('active', i === index);
+    });
+    document.querySelectorAll('.section').forEach((s, i) => {
+      s.classList.toggle('active', i === index);
+    });
+    if(index === 2) updateBatch();
+  }
+
+  /* ══════════════════════════════════════════════
+     SECTION 1 — INVENTORY ENGINE LOGIC
+     ══════════════════════════════════════════════ */
+  function initInventory() {
+    const grid = document.getElementById('ingredient-grid');
+    grid.innerHTML = '';
     
-    <nav class="bg-orange-800 text-white shadow-md p-4">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <i data-lucide="glass-water" class="w-8 h-8 text-amber-300"></i>
-                <span class="text-xl font-bold tracking-wide">Craft Mocktail Studio</span>
-            </div>
-            <div class="text-sm font-medium bg-orange-700 px-3 py-1 rounded-full text-amber-100">
-                Tropical Edition 🌴
-            </div>
+    // Process static structural schema configurations
+    for (const [category, items] of Object.entries(INGREDIENT_DATABASE)) {
+      const card = document.createElement('div');
+      card.className = 'category-card';
+      
+      let catIcon = "✨";
+      if(category==="Citrus") catIcon="🍋";
+      if(category==="Sweeteners") catIcon="🍯";
+      if(category==="Herbs") catIcon="🌿";
+      if(category==="Mixers") catIcon="🍾";
+      if(category==="Juices") catIcon="🧃";
+      if(category==="Bitters & Spice") catIcon="🌶️";
+
+      card.innerHTML = `
+        <div class="category-icon">${catIcon}</div>
+        <div class="category-name">${category}</div>
+        <div class="ingredient-list" id="cat-${category.replace(/[^a-zA-Z]/g, '')}"></div>
+      `;
+      grid.appendChild(card);
+
+      const listContainer = card.querySelector('.ingredient-list');
+      items.forEach(item => {
+        createIngredientRow(listContainer, item.name, item.tags, false);
+      });
+    }
+  }
+
+  function createIngredientRow(container, name, tags, isCustom) {
+    const wrapper = document.createElement('label');
+    wrapper.className = `ingredient-item ${isCustom ? 'custom-ingredient slide-in' : ''}`;
+    
+    const tokenStr = tags.join(',');
+    const isChecked = checkedIngredients.has(name);
+
+    if(isCustom) {
+      wrapper.innerHTML = `
+        <div class="ingredient-left">
+          <input type="checkbox" data-tags="${tokenStr}" ${isChecked?'checked':''} onchange="handleToggle(this, '${name}')">
+          <span class="ingredient-label">${name}</span>
+          <span class="custom-badge">User</span>
         </div>
-    </nav>
+        <button class="btn-delete-ingredient" onclick="event.preventDefault(); deleteCustomIngredient('${name}', this)">✕</button>
+      `;
+    } else {
+      wrapper.innerHTML = `
+        <input type="checkbox" data-tags="${tokenStr}" ${isChecked?'checked':''} onchange="handleToggle(this, '${name}')">
+        <span class="ingredient-label">${name}</span>
+      `;
+    }
 
-    <main class="container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        <div class="lg:col-span-1 space-y-6">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-orange-100">
-                <h2 class="text-lg font-semibold mb-4 flex items-center gap-2 text-orange-950">
-                    <i data-lucide="sparkles" class="w-5 h-5 text-orange-600"></i>
-                    What's your vibe?
-                </h2>
-                <select id="moodSelect" class="w-full p-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition">
-                    <option value="all">Show All Recipes</option>
-                    <option value="adventurous">Adventurous & Bold 🌶️</option>
-                    <option value="refreshing">Refreshing & Crisp 🌊</option>
-                    <option value="cozy">Cozy & Complex 🪵</option>
-                </select>
-            </div>
+    if(isChecked) wrapper.classList.add('checked');
+    container.appendChild(wrapper);
+  }
 
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-orange-100">
-                <h2 class="text-lg font-semibold mb-4 flex items-center gap-2 text-orange-950">
-                    <i data-lucide="refrigerator" class="w-5 h-5 text-orange-600"></i>
-                    My Bar Inventory
-                </h2>
-                <p class="text-sm text-stone-500 mb-4">Toggle items you have on hand to find matching recipes.</p>
-                <div id="inventoryContainer" class="flex flex-wrap gap-2">
-                    </div>
-            </div>
+  function handleToggle(checkbox, name) {
+    const label = checkbox.closest('.ingredient-item');
+    if (checkbox.checked) {
+      checkedIngredients.add(name);
+      label.classList.add('checked');
+    } else {
+      checkedIngredients.delete(name);
+      label.classList.remove('checked');
+    }
+    evalFlavorMatrix();
+  }
+
+  function addCustomIngredient() {
+    const input = document.getElementById('custom-ingredient-input');
+    const select = document.getElementById('custom-cat-select');
+    const nameStr = input.value.trim();
+    const catStr = select.value;
+
+    if(!nameStr) return;
+
+    // Check unique sequence bounds matrix
+    let duplicated = false;
+    if(checkedIngredients.has(nameStr)) duplicated = true;
+    for (const arr of Object.values(INGREDIENT_DATABASE)) {
+      if(arr.some(i => i.name.toLowerCase() === nameStr.toLowerCase())) duplicated = true;
+    }
+    if(customIngredientsStorage.some(i => i.name.toLowerCase() === nameStr.toLowerCase())) duplicated = true;
+
+    if(duplicated) {
+      const panel = document.getElementById('custom-creator');
+      panel.classList.remove('flash');
+      void panel.offsetWidth; // Force thread re-paint matrix loop
+      panel.classList.add('flash');
+      return;
+    }
+
+    const defaultTagsMap = {
+      "Citrus": ["citrus", "sour"],
+      "Sweeteners": ["sweet"],
+      "Herbs": ["herbal"],
+      "Mixers": ["fizzy"],
+      "Juices": ["sweet"],
+      "Bitters & Spice": ["bitter", "spicy"]
+    };
+
+    const newObj = { name: nameStr, tags: defaultTagsMap[catStr] || ["custom"], category: catStr };
+    customIngredientsStorage.push(newObj);
+
+    // Target dynamic injection element
+    const cleanId = catStr.replace(/[^a-zA-Z]/g, '');
+    const container = document.getElementById(`cat-${cleanId}`);
+    if(container) {
+      createIngredientRow(container, newObj.name, newObj.tags, true);
+    }
+
+    input.value = '';
+    input.focus();
+  }
+
+  function deleteCustomIngredient(name, btnElement) {
+    checkedIngredients.delete(name);
+    customIngredientsStorage = customIngredientsStorage.filter(i => i.name !== name);
+    const row = btnElement.closest('.ingredient-item');
+    if(row) {
+      row.remove();
+    }
+    evalFlavorMatrix();
+  }
+
+  function evalFlavorMatrix() {
+    const output = document.getElementById('flavor-output');
+    
+    // Map tracking unique array intersections
+    let aggregatedTags = new Set();
+    
+    // Parse standard data objects matching sets
+    document.querySelectorAll('.ingredient-item input[type="checkbox"]:checked').forEach(cb => {
+      const tagAttr = cb.getAttribute('data-tags');
+      if(tagAttr) {
+        tagAttr.split(',').forEach(t => aggregatedTags.add(t));
+      }
+    });
+
+    if(aggregatedTags.size === 0) {
+      output.innerHTML = `<div class="flavor-empty">Select ingredients above to reveal your flavor profile →</div>`;
+      return;
+    }
+
+    let tagHTML = '';
+    aggregatedTags.forEach(t => {
+      tagHTML += `<span class="flavor-tag tag-${t}">${t.toUpperCase()}</span>`;
+    });
+
+    // Ratio balancing suggestion matrix evaluator
+    let ratio = { name: "Balanced Base Equation", formula: "2.0 oz Base Engine : 0.75 oz Sour Acid Component : 0.75 oz Sweet Density modifier" };
+    if(aggregatedTags.has('spicy') && aggregatedTags.has('citrus')) {
+      ratio = { name: "High-Capsicum Heat Offset System", formula: "2.0 oz Base Fluid : 1.0 oz Sharp High-Citrus Blend : 0.5 oz High-Viscosity Sweetener" };
+    } else if(aggregatedTags.has('cozy') && !aggregatedTags.has('fizzy')) {
+      ratio = { name: "Stirred Spiritous Aroma Ratio", formula: "2.5 oz Thick Distilled Base : 0.5 oz Complex Modifier : 2 Dashes Intense Botanical Tincture" };
+    } else if(aggregatedTags.has('fizzy') && aggregatedTags.has('citrus')) {
+      ratio = { name: "Elongated Highball Matrix", formula: "1.5 oz Dense Acid Base Formulation : 0.75 oz Custom Cordial Sugar : 3.5 oz effervescent carbonation topper" };
+    }
+
+    output.innerHTML = `
+      <div class="flavor-tags">${tagHTML}</div>
+      <div class="ratio-box">
+        <div class="ratio-name">${ratio.name}</div>
+        <div class="ratio-formula">${ratio.formula}</div>
+      </div>`;
+  }
+
+  /* ══════════════════════════════════════════════
+     SECTION 2 — MOOD MATCHER
+     ══════════════════════════════════════════════ */
+  let lastScored = [];
+  let featuredIdx = 0;
+
+  function scoreAndSort(input) {
+    return MOCKTAIL_MATRIX.map(drink=>{
+      let moodScore=0;
+      drink.mood.forEach(kw=>{if(input.includes(kw))moodScore++;});
+      const missing=drink.required.filter(r=>!checkedIngredients.has(r));
+      const hasAll=missing.length===0;
+      const score=moodScore*3+(hasAll?10:0)+Math.max(0,drink.required.length-missing.length)*2;
+      return {drink,moodScore,missing,hasAll,score};
+    }).sort((a,b)=>b.score-a.score);
+  }
+
+  function matchMood() {
+    const input=document.getElementById('mood-text').value.toLowerCase().trim()||'refreshing';
+    lastScored=scoreAndSort(input);
+    featuredIdx=0;
+    renderResults();
+  }
+
+  function renderResults() {
+    const resBox = document.getElementById('mood-result');
+    if(!lastScored.length) return;
+    
+    const {drink, missing, hasAll} = lastScored[featuredIdx];
+    resBox.className = "mood-result visible";
+
+    let stepsHTML = drink.steps.map((s,i)=>`
+      <div class="build-step">
+        <span class="step-num">${i+1}</span>
+        <span>${s}</span>
+      </div>
+    `).join('');
+
+    let missingHTML = '';
+    if(!hasAll && missing.length > 0) {
+      missingHTML = `
+        <div class="missing-box">
+          <div class="missing-title">🔒 Inventory Backlog Missing Components</div>
+          ${missing.map(m=>`<div class="missing-item">${m}</div>`).join('')}
         </div>
+      `;
+    }
 
-        <div class="lg:col-span-2 space-y-8">
-            
-            <section>
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-stone-900 flex items-center gap-2">
-                        <i data-lucide="book-open" class="w-6 h-6 text-orange-700"></i>
-                        Curated Menu
-                    </h2>
-                    <span id="recipeCount" class="text-sm bg-orange-100 text-orange-800 px-3 py-1 rounded-full font-medium">
-                        Loading...
-                    </span>
-                </div>
-                
-                <div id="recipesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    </div>
-            </section>
-
-            <section class="bg-gradient-to-br from-orange-900 to-stone-900 text-white p-6 rounded-2xl shadow-xl relative overflow-hidden">
-                <div class="absolute right-0 bottom-0 opacity-10 pointer-events-none">
-                    <i data-lucide="glass-water" class="w-64 h-64"></i>
-                </div>
-                <div class="relative z-10">
-                    <span class="text-xs font-bold uppercase tracking-widest text-amber-400 bg-orange-800/50 px-2.5 py-1 rounded-md">Feature Preview</span>
-                    <h2 class="text-xl font-bold mt-2 mb-2">Visual Layering Sandbox</h2>
-                    <p class="text-orange-200 text-sm max-w-md">
-                        Mix, layer, and test liquid specific gravities dynamically to design beautiful tiered mocktails before pouring. Full sandbox controls coming soon!
-                    </p>
-                </div>
-            </section>
-
+    resBox.innerHTML = `
+      <div class="result-header">
+        <div class="drink-name">${drink.name}</div>
+        <div class="drink-archetype">🧬 ARCHETYPE: ${drink.archetype}</div>
+      </div>
+      <div class="result-body">
+        <div class="result-section">
+          <div class="result-section-label">Aroma Matrix Sensory Profile</div>
+          <div class="flavor-notes">"${drink.notes}"</div>
         </div>
-    </main>
+        <div class="result-section">
+          <div class="result-section-label">Step-By-Step Assembly Protocol</div>
+          <div class="build-steps">${stepsHTML}</div>
+        </div>
+        ${missingHTML}
+      </div>
+    `;
+  }
 
-    <script>
-        // Recipe Database Definition
-        const mocktailRecipes = [
-            {
-                id: 'hibiscus-paloma',
-                name: 'Smoked Hibiscus Paloma',
-                mood: 'adventurous',
-                ingredients: ['Grapefruit Juice', 'Hibiscus Syrup', 'Lime', 'Smoked Salt', 'Club Soda'],
-                description: 'A tart, floral take on a classic with a savory, lingering smoked salt rim.',
-                instructions: 'Rim glass with smoked salt. Shake grapefruit juice, lime, and hibiscus syrup with ice. Strain over fresh ice, top with club soda.'
-            },
-            {
-                id: 'cucumber-mint-cooler',
-                name: 'Cucumber Mint Cooler',
-                mood: 'refreshing',
-                ingredients: ['Cucumber', 'Mint', 'Lime', 'Simple Syrup', 'Tonic Water'],
-                description: 'Ultra-crisp and cooling, perfect for intense summer afternoons.',
-                instructions: 'Muddle cucumber slices and fresh mint leaves in the base of the glass. Add lime juice and simple syrup. Fill with crushed ice and top with tonic.'
-            },
-            {
-                id: 'spiced-ginger-no-jito',
-                name: 'Spiced Ginger No-jito',
-                mood: 'adventurous',
-                ingredients: ['Ginger Beer', 'Mint', 'Lime', 'Jalapeno', 'Demerara Syrup'],
-                description: 'A standard mojito structure flipped on its head with a fiery jalapeno and ginger kick.',
-                instructions: 'Gently slap mint leaves to release oils and place in glass with a thin slice of jalapeno. Add syrup and lime juice. Pack with ice and top with fiery ginger beer.'
-            },
-            {
-                id: 'rosemary-grapefruit-spritz',
-                name: 'Rosemary Grapefruit Spritz',
-                mood: 'cozy',
-                ingredients: ['Grapefruit Juice', 'Rosemary Syrup', 'Club Soda', 'Fresh Rosemary'],
-                description: 'Complex, bitter-sweet, and aromatic. The herbal notes ground the sharp citrus.',
-                instructions: 'Combine grapefruit juice and rosemary syrup in a stemware glass with ice. Top with club soda and slap a fresh rosemary sprig as a garnish.'
-            }
-        ];
+  /* ══════════════════════════════════════════════
+     SECTION 3 — BATCH SYSTEM CALCULATION
+     ══════════════════════════════════════════════ */
+  function updateBatch() {
+    const b = parseFloat(document.getElementById('sl-base').value);
+    const s = parseFloat(document.getElementById('sl-sweet').value);
+    const a = parseFloat(document.getElementById('sl-sour').value);
+    const m = parseFloat(document.getElementById('sl-mixer').value);
+    const g = parseInt(document.getElementById('sl-guests').value);
 
-        // Derived list of all unique ingredients across recipes
-        const allIngredients = Array.from(
-            new Set(mocktailRecipes.flatMap(recipe => recipe.ingredients))
-        ).sort();
+    document.getElementById('val-base').textContent = b.toFixed(2) + " oz";
+    document.getElementById('val-sweet').textContent = s.toFixed(2) + " oz";
+    document.getElementById('val-sour').textContent = a.toFixed(2) + " oz";
+    document.getElementById('val-mixer').textContent = m.toFixed(2) + " oz";
+    document.getElementById('val-guests').textContent = g;
 
-        // App state tracking active filters
-        let currentMoodFilter = 'all';
-        const userInventory = new Set(); // Track items user possesses
+    // Standard dilution rules parameterization calculations: 20% tracking calculation pre-carbonation mix volume
+    const preMixVol = b + s + a;
+    const dilutionVol = preMixVol * 0.20;
+    const totalSingleVol = preMixVol + dilutionVol + m;
 
-        // DOM Element Initializations
-        document.getElementById('moodSelect').addEventListener('change', (e) => {
-            const selectedMood = e.target.target || e.target.value;
-            filterRecipesByMood(selectedMood);
-        });
+    const targetContainer = document.getElementById('batch-rows');
+    targetContainer.innerHTML = '';
 
-        // Initialize User Interface Components
-        function initApp() {
-            lucide.createIcons(); // Initialize vector icon packs
-            renderInventoryToggles();
-            renderRecipes();
-        }
+    const components = [
+      { label: "Base Component Formulation", oz: b * g, highlight: false, type: "normal" },
+      { label: "High-Density Sweetener Modifier", oz: s * g, highlight: false, type: "normal" },
+      { label: "Sour Core Acid Matrix", oz: a * g, highlight: false, type: "normal" },
+      { label: "Theoretical Ice Melt Dilution (Water Addition)", oz: dilutionVol * g, highlight: true, type: "dilution" },
+      { label: "Effervescent Topper / Carbonated Mixer", oz: m * g, highlight: false, type: "normal" },
+      { label: "Net Yield Total Volumetric Capacity", oz: totalSingleVol * g, highlight: false, type: "total" }
+    ];
 
-        // Dynamically build toggle chips for inventory tracking
-        function renderInventoryToggles() {
-            const container = document.getElementById('inventoryContainer');
-            container.innerHTML = '';
+    components.forEach(c => {
+      if(c.oz <= 0) return;
+      const cups = c.oz / 8;
+      const row = document.createElement('div');
+      row.className = `batch-row ${c.type === 'total' ? 'total' : ''} ${c.type === 'dilution' ? 'dilution' : ''}`;
+      
+      row.innerHTML = `
+        <div class="row-label">${c.type === 'total' ? `<strong>${c.label}</strong>` : c.label}</div>
+        <div class="row-values">
+          <div class="val-oz">${c.oz.toFixed(1)}</div>
+          <div class="val-cups">${cups.toFixed(2)} c</div>
+        </div>
+      `;
+      targetContainer.appendChild(row);
+    });
+  }
 
-            allIngredients.forEach(ingredient => {
-                const button = document.createElement('button');
-                button.textContent = ingredient;
-                button.className = `text-xs px-3 py-1.5 rounded-xl border font-medium transition cursor-pointer ${
-                    userInventory.has(ingredient)
-                        ? 'bg-orange-600 text-white border-orange-600 shadow-sm'
-                        : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
-                }`;
-                
-                button.addEventListener('click', () => toggleInventoryItem(ingredient));
-                container.appendChild(button);
-            });
-        }
+  /* ══════════════════════════════════════════════
+     SECTION 4 — LAYERING SANDBOX VALIDATOR
+     ══════════════════════════════════════════════ */
+  function initLayerSandbox() {
+    const slots = document.getElementById('layer-slots');
+    slots.innerHTML = '';
 
-        // Toggle handling routine for user inventory set
-        function toggleInventoryItem(ingredient) {
-            if (userInventory.has(ingredient)) {
-                userInventory.delete(ingredient);
-            } else {
-                userInventory.add(ingredient);
-            }
-            renderInventoryToggles();
-            renderRecipes(); // Reactive UI update
-        }
+    // Generate 3 static processing layered column points
+    const positionLabels = ["Top Surface Layer [Index 0]", "Middle Suspending Buffer [Index 1]", "Base Density Foundation [Index 2]"];
+    
+    for(let i=0; i<3; i++) {
+      const slot = document.createElement('div');
+      slot.className = 'layer-slot';
+      
+      let selectOptions = `<option value="">-- Empty Fluid Node --</option>`;
+      LAYER_FLUID_MAP.forEach(fluid => {
+        // Automatically default staggered arrays to trigger layout validation loops quickly
+        const selectedAttr = ((i===0 && fluid.id==='cold-brew') || (i===1 && fluid.id==='lime') || (i===2 && fluid.id==='grenadine')) ? 'selected' : '';
+        selectOptions += `<option value="${fluid.id}" ${selectedAttr}>${fluid.name} (SG: ${fluid.sg.toFixed(2)})</option>`;
+      });
 
-        // Action hook triggered by mood selectors
-        function filterRecipesByMood(mood) {
-            currentMoodFilter = mood;
-            renderRecipes();
-        }
+      slot.innerHTML = `
+        <div class="layer-slot-label">${positionLabels[i]}</div>
+        <select class="layer-select" id="layer-sel-${i}" onchange="evalLayerStack()">
+          ${selectOptions}
+        </select>
+        <div class="density-badge" id="layer-sg-badge-${i}">Specific Gravity: --</div>
+      `;
+      slots.appendChild(slot);
+    }
 
-        // Render card layout elements filtered by application state parameters
-        function renderRecipes() {
-            const grid = document.getElementById('recipesGrid');
-            grid.innerHTML = '';
+    // Process initial reference dictionary cards
+    const refContainer = document.getElementById('density-ref');
+    refContainer.innerHTML = '';
+    
+    // Sort array copies relative to density metrics descending
+    [...LAYER_FLUID_MAP].sort((a,b)=>b.sg - a.sg).forEach(f => {
+      const item = document.createElement('div');
+      item.style.cssText = "display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-dim); padding:0.15rem 0.4rem; background:var(--deep); border-radius:4px;";
+      item.innerHTML = `<span>${f.name}</span><span style="font-family:'DM Mono', monospace; color:var(--amber);">${f.sg.toFixed(2)}</span>`;
+      refContainer.appendChild(item);
+    });
 
-            // Filtering routine logic matrix
-            const filtered = mocktailRecipes.filter(recipe => {
-                const matchesMood = currentMoodFilter === 'all' || recipe.mood === currentMoodFilter;
-                
-                // If inventory filter elements are active, confirm user has all recipe components
-                let matchesInventory = true;
-                if (userInventory.size > 0) {
-                    matchesInventory = recipe.ingredients.every(item => userInventory.has(item));
-                }
+    evalLayerStack();
+  }
 
-                return matchesMood && matchesInventory;
-            });
+  function evalLayerStack() {
+    const renderContainer = document.getElementById('liquid-layers');
+    const badgeContainer = document.getElementById('layer-status-badge');
+    renderContainer.innerHTML = '';
 
-            // Handle clean state where parameters eliminate all display possibilities
-            if (filtered.length === 0) {
-                grid.innerHTML = `
-                    <div class="col-span-full bg-white p-8 text-center rounded-2xl border border-dashed border-stone-200 text-stone-500">
-                        <i data-lucide="frown" class="w-10 h-10 mx-auto mb-2 text-stone-400"></i>
-                        <p class="font-medium">No matching recipes found.</p>
-                        <p class="text-xs text-stone-400 mt-1">Try toggling different ingredients or expanding your vibe settings.</p>
-                    </div>
-                `;
-                document.getElementById('recipeCount').textContent = '0 Recipes';
-                lucide.createIcons();
-                return;
-            }
+    let selectedObjects = [];
+    let completeInputCount = 0;
 
-            // Interface card injection engine loops
-            filtered.forEach(recipe => {
-                const card = document.createElement('div');
-                card.className = "bg-white rounded-2xl shadow-sm border border-stone-100 p-5 flex flex-col justify-between hover:shadow-md transition duration-200";
-                
-                const ingredientBadges = recipe.ingredients.map(ing => {
-                    const hasIt = userInventory.has(ing);
-                    return `<span class="text-[11px] px-2 py-0.5 rounded-md font-medium ${
-                        hasIt ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-stone-100 text-stone-600'
-                    }">${ing}</span>`;
-                }).join('');
+    for(let i=0; i<3; i++) {
+      const selectVal = document.getElementById(`layer-sel-${i}`).value;
+      const labelSg = document.getElementById(`layer-sg-badge-${i}`);
+      
+      if(selectVal) {
+        const matchingFluid = LAYER_FLUID_MAP.find(f => f.id === selectVal);
+        selectedObjects[i] = matchingFluid;
+        labelSg.innerText = `Specific Gravity: ${matchingFluid.sg.toFixed(2)}`;
+        completeInputCount++;
+      } else {
+        selectedObjects[i] = null;
+        labelSg.innerText = `Specific Gravity: --`;
+      }
+    }
 
-                card.innerHTML = `
-                    <div>
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="font-bold text-lg text-stone-900">${recipe.name}</h3>
-                            <span class="text-xs font-semibold capitalize px-2 py-0.5 rounded bg-orange-50 text-orange-700 border border-orange-100">${recipe.mood}</span>
-                        </div>
-                        <p class="text-stone-600 text-sm mb-4">${recipe.description}</p>
-                        <div class="flex flex-wrap gap-1.5 mb-4">
-                            ${ingredientBadges}
-                        </div>
-                    </div>
-                    <div class="pt-4 border-t border-stone-50 mt-auto">
-                        <h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-1">Preparation</h4>
-                        <p class="text-xs text-stone-600 leading-relaxed">${recipe.instructions}</p>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
+    // Physical layout engine rendering loop logic (built from bottom upwards)
+    for(let i=2; i>=0; i--) {
+      const obj = selectedObjects[i];
+      const layerElement = document.createElement('div');
+      layerElement.className = 'liquid-layer';
+      
+      if(obj) {
+        layerElement.style.background = obj.color;
+        layerElement.innerHTML = `<div class="layer-name-overlay">${obj.name}</div>`;
+      } else {
+        layerElement.style.background = 'transparent';
+      }
+      renderContainer.appendChild(layerElement);
+    }
 
-            // Update recipe count status label indicators dynamically
-            document.getElementById('recipeCount').textContent = `${filtered.length} Recipe${filtered.length === 1 ? '' : 's'}`;
-            lucide.createIcons();
-        }
+    if(completeInputCount < 3) {
+      badgeContainer.innerHTML = `<div class="status-badge warn">Assign all 3 fluid categories to verify stacking constraints.</div>`;
+      return;
+    }
 
-        // Fire application runtime initialization once execution context loads completely
-        window.addEventListener('DOMContentLoaded', initApp);
-    </script>
+    // Core validation calculation step checks
+    // Rules: index 0 (top) must have lowest SG, index 2 (bottom) must have highest SG.
+    const topSg = selectedObjects[0].sg;
+    const midSg = selectedObjects[1].sg;
+    const botSg = selectedObjects[2].sg;
+
+    if(botSg > midSg && midSg > topSg) {
+      badgeContainer.innerHTML = `<div class="status-badge good">✦ Hydrostatic Equilibrium Achieved! Stable layering confirmed.</div>`;
+    } else {
+      badgeContainer.innerHTML = `<div class="status-badge warn bleed-animation">⚠️ Density Bound Collision... Fluids will blend immediately!</div>`;
+    }
+  }
+
+  /* SYSTEM DOM LOADING EXECUTION TRIPPERS */
+  window.addEventListener('DOMContentLoaded', () => {
+    initInventory();
+    evalFlavorMatrix();
+    initLayerSandbox();
+  });
+</script>
 </body>
 </html>
